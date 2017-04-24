@@ -1,0 +1,37 @@
+//**********************************************  Valid Colors	********************************************************
+// {NORMAL}, {DARKRED}, {PINK}, {YELLOW}, {GREEN}, {LIGHTGREEN}, {RED}, {GRAY}, {BLUE}, {DARKBLUE}, {PURPLE}, {ORANGE} *
+//**********************************************************************************************************************
+//                                     http://i.imgur.com/q2wb8Cu.png                                                  *
+//{NORMAL} = x01 | {DARKRED} = x02 | {PINK} = x03 | {GREEN} = x04 | {YELLOW} = x09 | {LIGHTGREEN} = x06 | {RED} = x07  *
+//{GRAY} = x08 | {BLUE} = x0B | {DARKBLUE} = x0C | {PURPLE} = x0E|  {ORANGE} = x10                                     *
+//**********************************************************************************************************************
+"Phrases"
+{
+	"NO MVP"
+	{
+		"#format"		""
+		"en"			"No Custom MVP Anthem"
+		"zho"			"無MVP音樂."
+	}
+	
+	"MVP Menu Title"
+	{
+		"#format"		""
+		"en"			"Select Your Custom MVP Anthem:"
+		"zho"			"選擇你的MVP音樂."	
+	}
+	
+	"MVP"
+	{
+		"#format"		"{1:s},{2:s}"
+		"en"			"Playing <font color='#B15BFF'>{1}</font> MVP Anthem - <font color='#FF0000'>{2}</font>."
+		"zho"			"正在播放<font color='#B15BFF'>{1}</font> 的MVP音樂 - <font color='#FF0000'>{2}</font>."
+	}
+	
+	"Selected"
+	{
+		"#format"		"{1:s}}"
+		"en"			"{GREEN}[MVP]{NORMAL}Your MVP Anthem is {PINK}{1}."
+		"zho"			"{GREEN}[MVP]{NORMAL}你的MVP音樂是{PINK}{1}."
+	}
+}	

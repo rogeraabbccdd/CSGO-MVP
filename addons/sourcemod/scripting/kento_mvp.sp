@@ -50,7 +50,7 @@ public Plugin myinfo =
 {
 	name = "[CS:GO] Custom MVP Anthem",
 	author = "Kento",
-	version = "1.2",
+	version = "1.3",
 	description = "Custom MVP Anthem",
 	url = "https://github.com/rogeraabbccdd/csgo_mvp"
 };
@@ -108,12 +108,12 @@ public Action Event_RoundMVP(Handle event, const char[] name, bool dontBroadcast
 				{
 					//https://forums.alliedmods.net/showthread.php?t=227735
 					ClientCommand(i, "playgamesound Music.StopAllMusic");
+					
+					//Play MVP Anthem
+					EmitSoundCustom(i, g_eMVPAnthem[mvp][szMVPFile],_,_,_,_,_);
+					PrintHintText(i, "%T", "MVP", client, clientname, g_eMVPAnthem[mvp][szMVPName]);
 				}
-			}
-			
-			//Play MVP Anthem
-			EmitSoundToAllAny(g_eMVPAnthem[mvp][szMVPFile]);
-			PrintHintTextToAll("%T", "MVP", client, clientname, g_eMVPAnthem[mvp][szMVPName]);
+			}	
 		}
 	}
 }	
@@ -208,4 +208,13 @@ stock bool IsValidClient(int client)
 	if (client > MaxClients) return false;
 	if (!IsClientConnected(client)) return false;
 	return IsClientInGame(client);
+}
+
+// Edit from Quake Sounds v3 https://forums.alliedmods.net/showthread.php?t=224316
+// Custom EmitSound to allow compatibility with all game engines
+stock void EmitSoundCustom(int client, const char[] sound, int entity = SOUND_FROM_PLAYER, int channel = SNDCHAN_AUTO, int level = SNDLEVEL_NORMAL, int flags = SND_NOFLAGS, float volume = SNDVOL_NORMAL, int pitch = SNDPITCH_NORMAL, int speakerentity = -1, const float origin[3] = NULL_VECTOR, const float dir[3] = NULL_VECTOR, bool updatePos = true, float soundtime = 0.0)
+{
+	int clients[1]
+	clients[0]=client
+	EmitSoundAny(clients,1,sound,entity,channel,level,flags,volume,pitch,speakerentity,origin,dir,updatePos,soundtime)
 }

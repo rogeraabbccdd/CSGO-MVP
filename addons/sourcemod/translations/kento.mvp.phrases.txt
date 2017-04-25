@@ -24,14 +24,21 @@
 	"MVP"
 	{
 		"#format"		"{1:s},{2:s}"
-		"en"			"Playing <font color='#B15BFF'>{1}</font> MVP Anthem - <font color='#FF0000'>{2}</font>."
-		"zho"			"正在播放<font color='#B15BFF'>{1}</font> 的MVP音樂 - <font color='#FF0000'>{2}</font>."
+		"en"			"Playing <font color='#B15BFF'>{1}</font>s MVP Anthem - <font color='#FF0000'>{2}</font>"
+		"zho"			"正在播放<font color='#B15BFF'>{1}</font> 的MVP音樂 \n <font color='#FF0000'>{2}</font>"
 	}
 	
 	"Selected"
 	{
-		"#format"		"{1:s}}"
-		"en"			"{GREEN}[MVP]{NORMAL}Your MVP Anthem is {PINK}{1}."
-		"zho"			"{GREEN}[MVP]{NORMAL}你的MVP音樂是{PINK}{1}."
+		"#format"		"{1:s}"
+		"en"			"{GREEN}[MVP] {NORMAL}Your MVP Anthem is {PINK}{1}."
+		"zho"			"{GREEN}[MVP] {NORMAL}你的MVP音樂是{PINK}{1}."
+	}
+	
+	"No Selected"
+	{
+		"#format"		""
+		"en"			"{GREEN}[MVP] {NORMAL}Your MVP Anthem is {PINK}No MVP Anthem{NORMAL}."
+		"zho"			"{GREEN}[MVP] {NORMAL}你的MVP音樂是{PINK}無MVP音樂{NORMAL}."
 	}
 }	

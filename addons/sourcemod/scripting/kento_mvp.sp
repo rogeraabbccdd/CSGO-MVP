@@ -13,6 +13,10 @@
 //░░░░░░█▀▀█████████▀▀▀▀████████████▀░░░░
 //░░░░░░████▀░░███▀░░░░░░▀███░░▀██▀░░░░░░
 //░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+//***************NYAN CAT****************
+//
+//To Do
+//Rewrite menu to use %T client
 
 #include <sourcemod>
 #include <clientprefs>
@@ -46,7 +50,7 @@ public Plugin myinfo =
 {
 	name = "[CS:GO] Custom MVP Anthem",
 	author = "Kento",
-	version = "1.0",
+	version = "1.1",
 	description = "Custom MVP Anthem",
 	url = "https://github.com/rogeraabbccdd/csgo_mvp"
 };
@@ -109,7 +113,7 @@ public Action Event_RoundMVP(Handle event, const char[] name, bool dontBroadcast
 			
 			//Play MVP Anthem
 			EmitSoundToAllAny(g_eMVPAnthem[mvp][szMVPFile]);
-			PrintHintTextToAll("%t", "MVP", clientname, g_eMVPAnthem[mvp][szMVPName]);
+			PrintHintTextToAll("%T", "MVP", client, clientname, g_eMVPAnthem[mvp][szMVPName]);
 		}
 	}
 }	
@@ -174,7 +178,15 @@ public int MVPMenuHandler(Menu menu, MenuAction action, int client,int param)
 
 		int imvp_id = StringToInt(smvp_id, sizeof(smvp_id));
 		
-		CPrintToChat(client, "%t", "Selected", g_eMVPAnthem[imvp_id][szMVPName])
+		if(imvp_id == 0)
+		{
+			CPrintToChat(client, "%T", "No Selected", client, g_eMVPAnthem[imvp_id][szMVPName]);
+		}
+		
+		if(imvp_id > 0)
+		{
+			CPrintToChat(client, "%T", "Selected", client, g_eMVPAnthem[imvp_id][szMVPName]);
+		}
 
 		Selected[client] = imvp_id;
 		SetClientCookie(client, mvp_cookie, smvp_id);

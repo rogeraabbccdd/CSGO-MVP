@@ -50,7 +50,7 @@ public Plugin myinfo =
 {
 	name = "[CS:GO] Custom MVP Anthem",
 	author = "Kento",
-	version = "1.1",
+	version = "1.2",
 	description = "Custom MVP Anthem",
 	url = "https://github.com/rogeraabbccdd/csgo_mvp"
 };
@@ -158,7 +158,7 @@ void LoadConfig()
 			Format(filepath, sizeof(filepath), "sound/%s", g_eMVPAnthem[MVPCount][szMVPFile])
 		
 			AddFileToDownloadsTable(filepath);
-			PrecacheSoundAny(g_eMVPAnthem[MVPCount][szMVPFile]);
+			PrecacheSoundAny(g_eMVPAnthem[MVPCount][szMVPFile], true);
 		
 			MVPCount++;
 		}

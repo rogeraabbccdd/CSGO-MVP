@@ -23,7 +23,6 @@
 #include <sdktools>
 #include <sdkhooks>
 #include <kento_csgocolors>
-#include <emitsoundany>
 
 #define MAX_MVP_COUNT 256
 
@@ -50,7 +49,7 @@ public Plugin myinfo =
 {
 	name = "[CS:GO] Custom MVP Anthem",
 	author = "Kento",
-	version = "1.3",
+	version = "1.4",
 	description = "Custom MVP Anthem",
 	url = "https://github.com/rogeraabbccdd/csgo_mvp"
 };
@@ -58,6 +57,8 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
 	RegConsoleCmd("sm_mvp", Command_MVP);
+	
+	//RegConsoleCmd("sm_test", Command_Test);
 	
 	HookEvent("round_mvp", Event_RoundMVP);
 	
@@ -106,11 +107,12 @@ public Action Event_RoundMVP(Handle event, const char[] name, bool dontBroadcast
 			{
 				if (IsValidClient(i) && !IsFakeClient(i))
 				{
-					//https://forums.alliedmods.net/showthread.php?t=227735
+					// Mute game sound
+					// https://forums.alliedmods.net/showthread.php?t=227735
 					ClientCommand(i, "playgamesound Music.StopAllMusic");
 					
-					//Play MVP Anthem
-					EmitSoundCustom(i, g_eMVPAnthem[mvp][szMVPFile],_,_,_,_,_);
+					// Play MVP Anthem
+					ClientCommand(i, "play \"*%s\"", g_eMVPAnthem[mvp][szMVPFile]);
 					PrintHintText(i, "%T", "MVP", client, clientname, g_eMVPAnthem[mvp][szMVPName]);
 				}
 			}	
@@ -125,41 +127,28 @@ void LoadConfig()
 	kv = CreateKeyValues("MVP");
 	FileToKeyValues(kv, Configfile);
 	
-	MVPCount = 0;
+	MVPCount = 1;
 	
-	mvp_menu = new Menu(MVPMenuHandler);
-	
-	//Create MVP Menu
-	char mvpmenutitle[512];
-	Format(mvpmenutitle, sizeof(mvpmenutitle), "%t", "MVP Menu Title");
-	SetMenuTitle(mvp_menu, mvpmenutitle);
-	
-	//Add "No MVP Anthem"
-	char nomvp[512];
-	Format(nomvp, sizeof(nomvp), "%t", "NO MVP");
-	AddMenuItem(mvp_menu, "0", nomvp);
-	MVPCount++;
-	
-	//Read Config
+	// Read Config
 	if(KvGotoFirstSubKey(kv))
 	{
 		do
 		{
-			char mvp_id[PLATFORM_MAX_PATH];
-		
+			// Get kv
 			KvGetSectionName(kv, g_eMVPAnthem[MVPCount][szMVPName], PLATFORM_MAX_PATH);
 			KvGetString(kv, "file", g_eMVPAnthem[MVPCount][szMVPFile], PLATFORM_MAX_PATH);				
-				
-			Format(mvp_id, sizeof(mvp_id), "%d", MVPCount);
-		
-			AddMenuItem(mvp_menu, mvp_id, g_eMVPAnthem[MVPCount][szMVPName]);
-		
+			
+			// Download
 			char filepath[PLATFORM_MAX_PATH];
 			Format(filepath, sizeof(filepath), "sound/%s", g_eMVPAnthem[MVPCount][szMVPFile])
-		
 			AddFileToDownloadsTable(filepath);
-			PrecacheSoundAny(g_eMVPAnthem[MVPCount][szMVPFile], true);
-		
+			
+			// Precache
+			// https://wiki.alliedmods.net/Csgo_quirks
+			char soundpath[PLATFORM_MAX_PATH];
+			Format(soundpath, sizeof(soundpath), "*/%s", g_eMVPAnthem[MVPCount][szMVPFile]);
+			FakePrecacheSound(soundpath);
+			
 			MVPCount++;
 		}
 		while (KvGotoNextKey(kv));
@@ -171,16 +160,15 @@ void LoadConfig()
 
 public int MVPMenuHandler(Menu menu, MenuAction action, int client,int param)
 {
-	if (action == MenuAction_Select)
+	if(action == MenuAction_Select)
 	{
-		char smvp_id[10];
+		char smvp_id[32];
 		GetMenuItem(menu, param, smvp_id, sizeof(smvp_id));
-
 		int imvp_id = StringToInt(smvp_id, sizeof(smvp_id));
 		
 		if(imvp_id == 0)
 		{
-			CPrintToChat(client, "%T", "No Selected", client, g_eMVPAnthem[imvp_id][szMVPName]);
+			CPrintToChat(client, "%T", "No Selected", client);
 		}
 		
 		if(imvp_id > 0)
@@ -197,10 +185,45 @@ public Action Command_MVP(int client,int args)
 {
 	if (IsValidClient(client) && !IsFakeClient(client))
 	{
+		// Create MVP Menu
+		mvp_menu = new Menu(MVPMenuHandler);
+	
+		char mvpmenutitle[512];
+		Format(mvpmenutitle, sizeof(mvpmenutitle), "%T", "MVP Menu Title", client);
+		SetMenuTitle(mvp_menu, mvpmenutitle);
+		
+		// Add No MVP
+		char nomvp[PLATFORM_MAX_PATH];
+		Format(nomvp, sizeof(nomvp), "%T", "NO MVP", client);
+		AddMenuItem(mvp_menu, "0", nomvp);
+		
+		for(int i = 1; i < MVPCount; i++)
+		{
+			char mvp_id[PLATFORM_MAX_PATH];
+			Format(mvp_id, sizeof(mvp_id), "%i", i);
+			AddMenuItem(mvp_menu, mvp_id, g_eMVPAnthem[i][szMVPName]);
+		}
+		
 		DisplayMenu(mvp_menu, client, 0);
 	}
 	return Plugin_Handled;
 }
+
+/*
+public Action Command_Test(int client,int args)
+{
+	if (IsValidClient(client) && !IsFakeClient(client))
+	{
+		for(int i = 1; i < MVPCount; i++)
+		{
+			char mvp_id[PLATFORM_MAX_PATH];
+			Format(mvp_id, sizeof(mvp_id), "%d", i);
+			PrintToConsole(client, "%i, %s", i, g_eMVPAnthem[i][szMVPName]);
+		}
+	}
+	return Plugin_Handled;
+}
+*/
 
 stock bool IsValidClient(int client)
 {
@@ -210,11 +233,8 @@ stock bool IsValidClient(int client)
 	return IsClientInGame(client);
 }
 
-// Edit from Quake Sounds v3 https://forums.alliedmods.net/showthread.php?t=224316
-// Custom EmitSound to allow compatibility with all game engines
-stock void EmitSoundCustom(int client, const char[] sound, int entity = SOUND_FROM_PLAYER, int channel = SNDCHAN_AUTO, int level = SNDLEVEL_NORMAL, int flags = SND_NOFLAGS, float volume = SNDVOL_NORMAL, int pitch = SNDPITCH_NORMAL, int speakerentity = -1, const float origin[3] = NULL_VECTOR, const float dir[3] = NULL_VECTOR, bool updatePos = true, float soundtime = 0.0)
+// https://wiki.alliedmods.net/Csgo_quirks
+stock void FakePrecacheSound(const char[] szPath)
 {
-	int clients[1]
-	clients[0]=client
-	EmitSoundAny(clients,1,sound,entity,channel,level,flags,volume,pitch,speakerentity,origin,dir,updatePos,soundtime)
+	AddToStringTable(FindStringTable("soundprecache"), szPath);
 }

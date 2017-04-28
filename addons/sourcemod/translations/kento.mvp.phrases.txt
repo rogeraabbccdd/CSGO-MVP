@@ -11,7 +11,7 @@
 	{
 		"#format"		""
 		"en"			"No Custom MVP Anthem"
-		"zho"			"無MVP音樂."
+		"zho"			"無MVP音樂"
 	}
 	
 	"MVP Menu Title"
@@ -31,8 +31,8 @@
 	"Selected"
 	{
 		"#format"		"{1:s}"
-		"en"			"{GREEN}[MVP] {NORMAL}Your MVP Anthem is {PINK}{1}."
-		"zho"			"{GREEN}[MVP] {NORMAL}你的MVP音樂是{PINK}{1}."
+		"en"			"{GREEN}[MVP] {NORMAL}Your MVP Anthem is {PINK}{1}{NORMAL}."
+		"zho"			"{GREEN}[MVP] {NORMAL}你的MVP音樂是{PINK}{1}{NORMAL}."
 	}
 	
 	"No Selected"

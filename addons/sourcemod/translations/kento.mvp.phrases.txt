@@ -11,14 +11,28 @@
 	{
 		"#format"		""
 		"en"			"No Custom MVP Anthem"
-		"zho"			"無MVP音樂"
+		"zho"			"無MVP音樂."
 	}
 	
 	"MVP Menu Title"
 	{
 		"#format"		""
 		"en"			"Select Your Custom MVP Anthem:"
-		"zho"			"選擇你的MVP音樂."	
+		"zho"			"選擇你的MVP音樂:"	
+	}
+	
+	"Mute MVP"
+	{
+		"#format"		""
+		"en"			"Mute MVP Anthem."
+		"zho"			"靜音MVP音樂"
+	}
+	
+	"UnMute MVP"
+	{
+		"#format"		""
+		"en"			"UnMute MVP Anthem."
+		"zho"			"取消靜音MVP音樂"
 	}
 	
 	"MVP"
@@ -31,8 +45,8 @@
 	"Selected"
 	{
 		"#format"		"{1:s}"
-		"en"			"{GREEN}[MVP] {NORMAL}Your MVP Anthem is {PINK}{1}{NORMAL}."
-		"zho"			"{GREEN}[MVP] {NORMAL}你的MVP音樂是{PINK}{1}{NORMAL}."
+		"en"			"{GREEN}[MVP] {NORMAL}Your MVP Anthem is {PINK}{1}."
+		"zho"			"{GREEN}[MVP] {NORMAL}你的MVP音樂是{PINK}{1}."
 	}
 	
 	"No Selected"
@@ -40,5 +54,19 @@
 		"#format"		""
 		"en"			"{GREEN}[MVP] {NORMAL}Your MVP Anthem is {PINK}No MVP Anthem{NORMAL}."
 		"zho"			"{GREEN}[MVP] {NORMAL}你的MVP音樂是{PINK}無MVP音樂{NORMAL}."
+	}
+	
+	"Mute"
+	{
+		"#format"		""
+		"en"			"{GREEN}[MVP] {NORMAL}Your have muted MVP Anthem."
+		"zho"			"{GREEN}[MVP] {NORMAL}你已將MVP音樂靜音."
+	}
+	
+	"Un Mute"
+	{
+		"#format"		""
+		"en"			"{GREEN}[MVP] {NORMAL}Your have unmuted MVP Anthem."
+		"zho"			"{GREEN}[MVP] {NORMAL}你已將MVP音樂取消靜音."
 	}
 }	

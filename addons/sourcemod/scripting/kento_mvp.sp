@@ -14,9 +14,6 @@
 //░░░░░░████▀░░███▀░░░░░░▀███░░▀██▀░░░░░░
 //░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 //***************NYAN CAT****************
-//
-//To Do
-//Rewrite menu to use %T client
 
 #include <sourcemod>
 #include <clientprefs>
@@ -42,23 +39,32 @@ enum MVPAnthem
 int g_eMVPAnthem[MAX_MVP_COUNT+1][MVPAnthem];
 
 Handle mvp_cookie;
+Handle mvp_cookie2;
 Handle mvp_menu;
 Handle kv;
+
+bool MuteMVP[MAXPLAYERS + 1];
 
 public Plugin myinfo =
 {
 	name = "[CS:GO] Custom MVP Anthem",
 	author = "Kento",
-	version = "1.4",
+	version = "1.5",
 	description = "Custom MVP Anthem",
 	url = "https://github.com/rogeraabbccdd/csgo_mvp"
 };
 
 public void OnPluginStart()
 {
-	RegConsoleCmd("sm_mvp", Command_MVP);
+	RegConsoleCmd("sm_mvp", Command_MVP, "Select Your MVP Anthem");
+	RegConsoleCmd("sm_mutemvp", Command_MuteMVP, "Mute MVP Anthem");
+	RegConsoleCmd("sm_unmutemvp", Command_UnMuteMVP, "UnMute MVP Anthem");
 	
-	//RegConsoleCmd("sm_test", Command_Test);
+	// Do we really need this?
+	//RegAdminCmd("sm_setmvp", Command_SetMVP, ADMFLAG_ROOT, "Set Player MVP Anthem");
+	
+	// Print mvpid and name in console
+	//RegConsoleCmd("sm_mvptest", Command_Test);
 	
 	HookEvent("round_mvp", Event_RoundMVP);
 	
@@ -67,24 +73,38 @@ public void OnPluginStart()
 	LoadTranslations("kento.mvp.phrases");
 	
 	mvp_cookie = RegClientCookie("mvp_cookie", "Player's MVP Anthem", CookieAccess_Private);
-	for (int i = 0; i <= MaxClients; i++)
-	{
-		if(IsValidClient(i))
-		{
-			OnClientCookiesCached(i);
-		}
-	}
+	mvp_cookie2 = RegClientCookie("mvp_cookie2", "Player Mute MVP Anthem Or Not", CookieAccess_Private);
 }
 
-public void OnClientCookiesCached(int client)
+public void OnClientPutInServer(int client)
 {
-	if (IsValidClient(client))
+	if(!IsValidClient(client) && IsFakeClient(client))
+		return;
+		
+	char scookie[8];
+	GetClientCookie(client, mvp_cookie, scookie, sizeof(scookie));
+	if(!StrEqual(scookie, ""))
 	{
-		char scookie[8];
-		GetClientCookie(client, mvp_cookie, scookie, sizeof(scookie));
 		int icookie = StringToInt(scookie);
 		Selected[client] = icookie;
 	}
+	if(StrEqual(scookie,""))
+	{
+		Selected[client] = 0;
+	}
+
+		
+	char scookie2[8];
+	GetClientCookie(client, mvp_cookie2, scookie2, sizeof(scookie2));
+	if(!StrEqual(scookie, ""))
+	{
+		MuteMVP[client] = view_as<bool>(StringToInt(scookie2));
+	}
+	if(StrEqual(scookie,""))
+	{
+		MuteMVP[client] = false;
+	}
+	
 }
 
 public void OnConfigsExecuted()
@@ -107,13 +127,19 @@ public Action Event_RoundMVP(Handle event, const char[] name, bool dontBroadcast
 			{
 				if (IsValidClient(i) && !IsFakeClient(i))
 				{
-					// Mute game sound
-					// https://forums.alliedmods.net/showthread.php?t=227735
-					ClientCommand(i, "playgamesound Music.StopAllMusic");
-					
-					// Play MVP Anthem
-					ClientCommand(i, "play \"*%s\"", g_eMVPAnthem[mvp][szMVPFile]);
+					// Announce MVP
 					PrintHintText(i, "%T", "MVP", client, clientname, g_eMVPAnthem[mvp][szMVPName]);
+					
+					// Player doesn't mute mvp
+					if (!MuteMVP[i])
+					{
+						// Mute game sound
+						// https://forums.alliedmods.net/showthread.php?t=227735
+						ClientCommand(i, "playgamesound Music.StopAllMusic");
+					
+						// Play MVP Anthem
+						ClientCommand(i, "play \"*%s\"", g_eMVPAnthem[mvp][szMVPFile]);
+					}
 				}
 			}	
 		}
@@ -164,20 +190,33 @@ public int MVPMenuHandler(Menu menu, MenuAction action, int client,int param)
 	{
 		char smvp_id[32];
 		GetMenuItem(menu, param, smvp_id, sizeof(smvp_id));
-		int imvp_id = StringToInt(smvp_id, sizeof(smvp_id));
 		
-		if(imvp_id == 0)
-		{
-			CPrintToChat(client, "%T", "No Selected", client);
-		}
+		// Player Select Mute In Menu
+		if(StrEqual(smvp_id,"mute"))
+			FakeClientCommand(client, "sm_mutemvp");
 		
-		if(imvp_id > 0)
+		// Player Select UnMute In Menu
+		if(StrEqual(smvp_id,"unmute"))
+			FakeClientCommand(client, "sm_unmutemvp");
+		
+		// Player Select MVP In Menu
+		if(!StrEqual(smvp_id,"unmute") && !StrEqual(smvp_id,"unmute"))
 		{
-			CPrintToChat(client, "%T", "Selected", client, g_eMVPAnthem[imvp_id][szMVPName]);
-		}
+			int imvp_id = StringToInt(smvp_id, sizeof(smvp_id));
+		
+			if(imvp_id == 0)
+			{
+				CPrintToChat(client, "%T", "No Selected", client);
+			}
+		
+			if(imvp_id > 0)
+			{
+				CPrintToChat(client, "%T", "Selected", client, g_eMVPAnthem[imvp_id][szMVPName]);
+			}
 
-		Selected[client] = imvp_id;
-		SetClientCookie(client, mvp_cookie, smvp_id);
+			Selected[client] = imvp_id;
+			SetClientCookie(client, mvp_cookie, smvp_id);
+		}
 	}
 }
 
@@ -193,6 +232,14 @@ public Action Command_MVP(int client,int args)
 		SetMenuTitle(mvp_menu, mvpmenutitle);
 		
 		// Add No MVP
+		char mute[PLATFORM_MAX_PATH];
+		Format(mute, sizeof(mute), "%T", "Mute MVP", client);
+		AddMenuItem(mvp_menu, "mute", mute);
+		
+		char unmute[PLATFORM_MAX_PATH];
+		Format(unmute, sizeof(unmute), "%T", "UnMute MVP", client);
+		AddMenuItem(mvp_menu, "unmute", unmute);
+		
 		char nomvp[PLATFORM_MAX_PATH];
 		Format(nomvp, sizeof(nomvp), "%T", "NO MVP", client);
 		AddMenuItem(mvp_menu, "0", nomvp);
@@ -209,16 +256,52 @@ public Action Command_MVP(int client,int args)
 	return Plugin_Handled;
 }
 
+public Action Command_MuteMVP(int client,int args)
+{
+	CPrintToChat(client, "%T", "Mute", client);
+	
+	MuteMVP[client] = true;
+	SetClientCookie(client, mvp_cookie2, "1");
+}
+
+public Action Command_UnMuteMVP(int client,int args)
+{
+	// Player decide to UNMUTE mvp
+	CPrintToChat(client, "%T", "Un Mute", client);
+	
+	MuteMVP[client] = false;
+	SetClientCookie(client, mvp_cookie2, "0");
+}
+
+/*
+public Action Command_SetMVP(int client,int args)
+{
+	
+}
+
+*/
+
 /*
 public Action Command_Test(int client,int args)
 {
 	if (IsValidClient(client) && !IsFakeClient(client))
 	{
+		if(MuteMVP[client])
+			PrintToChat(client, "You Mute MVP");
+			
+		if(!MuteMVP[client])
+			PrintToChat(client, "You Are Not Mute MVP");
+			
+		PrintToChat(client, "You're MVP is ID %i, Name %s", Selected[client], g_eMVPAnthem[client][szMVPFile]);
+		
+		PrintToChat(client, "Chack console output for all MVP id and name in your config");
+			
+		PrintToConsole(client, "********** Custom MVP **********");
 		for(int i = 1; i < MVPCount; i++)
 		{
 			char mvp_id[PLATFORM_MAX_PATH];
 			Format(mvp_id, sizeof(mvp_id), "%d", i);
-			PrintToConsole(client, "%i, %s", i, g_eMVPAnthem[i][szMVPName]);
+			PrintToConsole(client, "ID %i, Name %s", i, g_eMVPAnthem[i][szMVPName]);
 		}
 	}
 	return Plugin_Handled;

@@ -44,7 +44,7 @@ public Plugin myinfo =
 {
 	name = "[CS:GO] Custom MVP Anthem",
 	author = "Kento",
-	version = "1.6",
+	version = "1.6.1",
 	description = "Custom MVP Anthem",
 	url = "https://github.com/rogeraabbccdd/csgo_mvp"
 };
@@ -165,13 +165,13 @@ void LoadConfig()
 			strcopy(g_sMVPFile[MVPCount], sizeof(g_sMVPFile[]), file);
 				
 			// Download
-			char filepath[10240];
+			char filepath[PLATFORM_MAX_PATH];
 			Format(filepath, sizeof(filepath), "sound/%s", g_sMVPFile[MVPCount])
 			AddFileToDownloadsTable(filepath);
 			
 			// Precache
 			// https://wiki.alliedmods.net/Csgo_quirks
-			char soundpath[10240];
+			char soundpath[PLATFORM_MAX_PATH];
 			Format(soundpath, sizeof(soundpath), "*/%s", g_sMVPFile[MVPCount]);
 			FakePrecacheSound(soundpath);
 			

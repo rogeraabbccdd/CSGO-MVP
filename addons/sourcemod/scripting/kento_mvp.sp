@@ -21,7 +21,7 @@
 #include <sdkhooks>
 #include <kento_csgocolors>
 
-#define MAX_MVP_COUNT 256
+#define MAX_MVP_COUNT 1000
 
 #pragma newdecls required
 
@@ -30,13 +30,8 @@ int MVPCount;
 
 char Configfile[PLATFORM_MAX_PATH];
 
-enum MVPAnthem
-{
-	String:szMVPName[PLATFORM_MAX_PATH],
-	String:szMVPFile[PLATFORM_MAX_PATH],
-}
-
-int g_eMVPAnthem[MAX_MVP_COUNT+1][MVPAnthem];
+char g_sMVPName[MAX_MVP_COUNT+1][PLATFORM_MAX_PATH + 1];
+char g_sMVPFile[MAX_MVP_COUNT+1][PLATFORM_MAX_PATH + 1];
 
 Handle mvp_cookie;
 Handle mvp_cookie2;
@@ -49,7 +44,7 @@ public Plugin myinfo =
 {
 	name = "[CS:GO] Custom MVP Anthem",
 	author = "Kento",
-	version = "1.5",
+	version = "1.6",
 	description = "Custom MVP Anthem",
 	url = "https://github.com/rogeraabbccdd/csgo_mvp"
 };
@@ -64,7 +59,7 @@ public void OnPluginStart()
 	//RegAdminCmd("sm_setmvp", Command_SetMVP, ADMFLAG_ROOT, "Set Player MVP Anthem");
 	
 	// Print mvpid and name in console
-	//RegConsoleCmd("sm_mvptest", Command_Test);
+	RegAdminCmd("sm_mvptest", Command_Test, ADMFLAG_ROOT, "Use this to check your MVP Anthem plugin works fine or not.");
 	
 	HookEvent("round_mvp", Event_RoundMVP);
 	
@@ -92,7 +87,6 @@ public void OnClientPutInServer(int client)
 	{
 		Selected[client] = 0;
 	}
-
 		
 	char scookie2[8];
 	GetClientCookie(client, mvp_cookie2, scookie2, sizeof(scookie2));
@@ -128,7 +122,7 @@ public Action Event_RoundMVP(Handle event, const char[] name, bool dontBroadcast
 				if (IsValidClient(i) && !IsFakeClient(i))
 				{
 					// Announce MVP
-					PrintHintText(i, "%T", "MVP", client, clientname, g_eMVPAnthem[mvp][szMVPName]);
+					PrintHintText(i, "%T", "MVP", client, clientname, g_sMVPName[mvp]);
 					
 					// Player doesn't mute mvp
 					if (!MuteMVP[i])
@@ -138,7 +132,7 @@ public Action Event_RoundMVP(Handle event, const char[] name, bool dontBroadcast
 						ClientCommand(i, "playgamesound Music.StopAllMusic");
 					
 						// Play MVP Anthem
-						ClientCommand(i, "play \"*%s\"", g_eMVPAnthem[mvp][szMVPFile]);
+						ClientCommand(i, "play \"*%s\"", g_sMVPFile[mvp]);
 					}
 				}
 			}	
@@ -158,21 +152,27 @@ void LoadConfig()
 	// Read Config
 	if(KvGotoFirstSubKey(kv))
 	{
+		char name[MAX_MVP_COUNT];
+		char file[MAX_MVP_COUNT];
+		
 		do
 		{
 			// Get kv
-			KvGetSectionName(kv, g_eMVPAnthem[MVPCount][szMVPName], PLATFORM_MAX_PATH);
-			KvGetString(kv, "file", g_eMVPAnthem[MVPCount][szMVPFile], PLATFORM_MAX_PATH);				
+			KvGetSectionName(kv, name, sizeof(name));
+			KvGetString(kv, "file", file, sizeof(file));				
 			
+			strcopy(g_sMVPName[MVPCount], sizeof(g_sMVPName[]), name);
+			strcopy(g_sMVPFile[MVPCount], sizeof(g_sMVPFile[]), file);
+				
 			// Download
-			char filepath[PLATFORM_MAX_PATH];
-			Format(filepath, sizeof(filepath), "sound/%s", g_eMVPAnthem[MVPCount][szMVPFile])
+			char filepath[10240];
+			Format(filepath, sizeof(filepath), "sound/%s", g_sMVPFile[MVPCount])
 			AddFileToDownloadsTable(filepath);
 			
 			// Precache
 			// https://wiki.alliedmods.net/Csgo_quirks
-			char soundpath[PLATFORM_MAX_PATH];
-			Format(soundpath, sizeof(soundpath), "*/%s", g_eMVPAnthem[MVPCount][szMVPFile]);
+			char soundpath[10240];
+			Format(soundpath, sizeof(soundpath), "*/%s", g_sMVPFile[MVPCount]);
 			FakePrecacheSound(soundpath);
 			
 			MVPCount++;
@@ -188,7 +188,16 @@ public int MVPMenuHandler(Menu menu, MenuAction action, int client,int param)
 {
 	if(action == MenuAction_Select)
 	{
-		char smvp_id[32];
+		//
+		//******************************************************************************************
+		//** "Don't use any other value than 10, otherwise you may crash clients and a server"	  **
+		//**													~ from Root's csgo skins chooser  **
+		//******************************************************************************************
+		//
+		// He is goddamn right, I use 32 b4 and that's why dis plugin have bugs
+		//
+		
+		char smvp_id[10];
 		GetMenuItem(menu, param, smvp_id, sizeof(smvp_id));
 		
 		// Player Select Mute In Menu
@@ -203,6 +212,8 @@ public int MVPMenuHandler(Menu menu, MenuAction action, int client,int param)
 		if(!StrEqual(smvp_id,"unmute") && !StrEqual(smvp_id,"unmute"))
 		{
 			int imvp_id = StringToInt(smvp_id, sizeof(smvp_id));
+			
+			//CPrintToChat(client, "s: %s, i: %i", smvp_id, imvp_id);
 		
 			if(imvp_id == 0)
 			{
@@ -211,7 +222,7 @@ public int MVPMenuHandler(Menu menu, MenuAction action, int client,int param)
 		
 			if(imvp_id > 0)
 			{
-				CPrintToChat(client, "%T", "Selected", client, g_eMVPAnthem[imvp_id][szMVPName]);
+				CPrintToChat(client, "%T", "Selected", client, g_sMVPName[imvp_id]);
 			}
 
 			Selected[client] = imvp_id;
@@ -248,7 +259,7 @@ public Action Command_MVP(int client,int args)
 		{
 			char mvp_id[PLATFORM_MAX_PATH];
 			Format(mvp_id, sizeof(mvp_id), "%i", i);
-			AddMenuItem(mvp_menu, mvp_id, g_eMVPAnthem[i][szMVPName]);
+			AddMenuItem(mvp_menu, mvp_id, g_sMVPName[i]);
 		}
 		
 		DisplayMenu(mvp_menu, client, 0);
@@ -281,7 +292,7 @@ public Action Command_SetMVP(int client,int args)
 
 */
 
-/*
+
 public Action Command_Test(int client,int args)
 {
 	if (IsValidClient(client) && !IsFakeClient(client))
@@ -292,7 +303,9 @@ public Action Command_Test(int client,int args)
 		if(!MuteMVP[client])
 			PrintToChat(client, "You Are Not Mute MVP");
 			
-		PrintToChat(client, "You're MVP is ID %i, Name %s", Selected[client], g_eMVPAnthem[client][szMVPFile]);
+		int mvp = Selected[client];
+		
+		PrintToChat(client, "You're MVP is ID %i, Name %s", Selected[client], g_sMVPName[mvp]);
 		
 		PrintToChat(client, "Chack console output for all MVP id and name in your config");
 			
@@ -301,12 +314,12 @@ public Action Command_Test(int client,int args)
 		{
 			char mvp_id[PLATFORM_MAX_PATH];
 			Format(mvp_id, sizeof(mvp_id), "%d", i);
-			PrintToConsole(client, "ID %i, Name %s", i, g_eMVPAnthem[i][szMVPName]);
+			PrintToConsole(client, "ID %i, Name %s, File %s", i, g_sMVPName[i], g_sMVPFile[i]);
 		}
 	}
 	return Plugin_Handled;
 }
-*/
+
 
 stock bool IsValidClient(int client)
 {

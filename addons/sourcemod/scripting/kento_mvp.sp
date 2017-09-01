@@ -44,7 +44,7 @@ public Plugin myinfo =
 {
 	name = "[CS:GO] Custom MVP Anthem",
 	author = "Kento",
-	version = "1.6.1",
+	version = "1.7",
 	description = "Custom MVP Anthem",
 	url = "https://github.com/rogeraabbccdd/csgo_mvp"
 };
@@ -83,18 +83,18 @@ public void OnClientPutInServer(int client)
 		int icookie = StringToInt(scookie);
 		Selected[client] = icookie;
 	}
-	if(StrEqual(scookie,""))
+	else if(StrEqual(scookie,""))
 	{
 		Selected[client] = 0;
 	}
 		
 	char scookie2[8];
 	GetClientCookie(client, mvp_cookie2, scookie2, sizeof(scookie2));
-	if(!StrEqual(scookie, ""))
+	if(!StrEqual(scookie2, ""))
 	{
 		MuteMVP[client] = view_as<bool>(StringToInt(scookie2));
 	}
-	if(StrEqual(scookie,""))
+	else if(StrEqual(scookie2,""))
 	{
 		MuteMVP[client] = false;
 	}

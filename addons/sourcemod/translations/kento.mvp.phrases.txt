@@ -56,17 +56,17 @@
 		"zho"			"{GREEN}[MVP] {NORMAL}你的MVP音樂是{PINK}無MVP音樂{NORMAL}."
 	}
 	
-	"Mute"
+	"Volume 1"
 	{
 		"#format"		""
-		"en"			"{GREEN}[MVP] {NORMAL}Your have muted MVP Anthem."
-		"zho"			"{GREEN}[MVP] {NORMAL}你已將MVP音樂靜音."
+		"en"			"{GREEN}[MVP] {NORMAL}Volume values must be {RED}0.0- 1.0"
+		"zho"			"{GREEN}[MVP] {NORMAL}音量大小限制為 {RED}0.0 - 1.0"
 	}
 	
-	"Un Mute"
+	"Volume 2"
 	{
-		"#format"		""
-		"en"			"{GREEN}[MVP] {NORMAL}Your have unmuted MVP Anthem."
-		"zho"			"{GREEN}[MVP] {NORMAL}你已將MVP音樂取消靜音."
+		"#format"		"{1:.2f}"
+		"en"			"{GREEN}[MVP] {NORMAL}Volume is set to {PINK}{1}"
+		"zho"			"{GREEN}[MVP] {NORMAL}音量設定為 {PINK}{1}"
 	}
 }	

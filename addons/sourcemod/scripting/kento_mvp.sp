@@ -33,13 +33,13 @@ char Configfile[PLATFORM_MAX_PATH],
 
 Handle mvp_cookie, mvp_cookie2;
 
-bool MuteMVP[MAXPLAYERS + 1];
+float VolMVP[MAXPLAYERS + 1];
 
 public Plugin myinfo =
 {
 	name = "[CS:GO] Custom MVP Anthem",
 	author = "Kento",
-	version = "1.8",
+	version = "1.9",
 	description = "Custom MVP Anthem",
 	url = "https://github.com/rogeraabbccdd/csgo_mvp"
 };
@@ -47,8 +47,7 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
 	RegConsoleCmd("sm_mvp", Command_MVP, "Select Your MVP Anthem");
-	RegConsoleCmd("sm_mutemvp", Command_MuteMVP, "Mute MVP Anthem");
-	RegConsoleCmd("sm_unmutemvp", Command_UnMuteMVP, "UnMute MVP Anthem");
+	RegConsoleCmd("sm_mvpvol", Command_MVPVol, "MVP Volume");
 	
 	RegAdminCmd("sm_mvptest", Command_Test, ADMFLAG_ROOT, "Use this to check your MVP Anthem plugin works fine or not.");
 	
@@ -57,7 +56,7 @@ public void OnPluginStart()
 	LoadTranslations("kento.mvp.phrases");
 	
 	mvp_cookie = RegClientCookie("mvp_cookie", "Player's MVP Anthem", CookieAccess_Private);
-	mvp_cookie2 = RegClientCookie("mvp_cookie2", "Player Mute MVP Anthem Or Not", CookieAccess_Private);
+	mvp_cookie2 = RegClientCookie("mvp_vol", "Player MVP volume", CookieAccess_Private);
 	
 	for(int i = 1; i <= MaxClients; i++)
 	{ 
@@ -83,13 +82,12 @@ public void OnClientCookiesCached(int client)
 	}
 	else if(StrEqual(scookie,""))	Selected[client] = 0;	
 		
-	char scookie2[8];
-	GetClientCookie(client, mvp_cookie2, scookie2, sizeof(scookie2));
-	if(!StrEqual(scookie2, ""))
+	GetClientCookie(client, mvp_cookie2, scookie, sizeof(scookie));
+	if(!StrEqual(scookie, ""))
 	{
-		MuteMVP[client] = view_as<bool>(StringToInt(scookie2));
+		VolMVP[client] = StringToFloat(scookie);
 	}
-	else if(StrEqual(scookie2,""))	MuteMVP[client] = false;
+	else if(StrEqual(scookie,""))	VolMVP[client] = 1.0;
 }
 
 public void OnConfigsExecuted()
@@ -104,6 +102,9 @@ public Action Event_RoundMVP(Handle event, const char[] name, bool dontBroadcast
 	char clientname [PLATFORM_MAX_PATH];
 	GetClientName(client, clientname, sizeof(clientname));
 	
+	char sound[PLATFORM_MAX_PATH + 1];
+	Format(sound, sizeof(sound), "*/%s", g_sMVPFile[mvp])
+	
 	if (IsValidClient(client) && !IsFakeClient(client) && Selected[client] > 0)
 	{
 		for(int i = 1; i <= MaxClients; i++)
@@ -113,16 +114,12 @@ public Action Event_RoundMVP(Handle event, const char[] name, bool dontBroadcast
 				// Announce MVP
 				PrintHintText(i, "%T", "MVP", client, clientname, g_sMVPName[mvp]);
 					
-				// Player doesn't mute mvp
-				if (!MuteMVP[i])
-				{
-					// Mute game sound
-					// https://forums.alliedmods.net/showthread.php?t=227735
-					ClientCommand(i, "playgamesound Music.StopAllMusic");
-					
-					// Play MVP Anthem
-					ClientCommand(i, "play \"*%s\"", g_sMVPFile[mvp]);
-				}
+				// Mute game sound
+				// https://forums.alliedmods.net/showthread.php?t=227735
+				ClientCommand(i, "playgamesound Music.StopAllMusic");
+				
+				// Play MVP Anthem
+				EmitSoundToClient(i, sound, SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NONE, _, VolMVP[i]);
 			}	
 		}
 	}
@@ -179,21 +176,14 @@ public int MVPMenuHandler(Menu menu, MenuAction action, int client,int param)
 		char smvp_id[10];
 		GetMenuItem(menu, param, smvp_id, sizeof(smvp_id));
 		
-		if(StrEqual(smvp_id,"mute"))	FakeClientCommand(client, "sm_mutemvp");
-		
-		else if(StrEqual(smvp_id,"unmute"))	FakeClientCommand(client, "sm_unmutemvp");
-		
-		else if(!StrEqual(smvp_id,"unmute") && !StrEqual(smvp_id,"unmute"))
-		{
-			int imvp_id = StringToInt(smvp_id, sizeof(smvp_id));
+		int imvp_id = StringToInt(smvp_id, sizeof(smvp_id));
 			
-			if(imvp_id == 0)	CPrintToChat(client, "%T", "No Selected", client);
-		
-			else if(imvp_id > 0)	CPrintToChat(client, "%T", "Selected", client, g_sMVPName[imvp_id]);
+		if(imvp_id == 0)	CPrintToChat(client, "%T", "No Selected", client);
+	
+		else if(imvp_id > 0)	CPrintToChat(client, "%T", "Selected", client, g_sMVPName[imvp_id]);
 
-			Selected[client] = imvp_id;
-			SetClientCookie(client, mvp_cookie, smvp_id);
-		}
+		Selected[client] = imvp_id;
+		SetClientCookie(client, mvp_cookie, smvp_id);
 	}
 }
 
@@ -206,14 +196,6 @@ public Action Command_MVP(int client,int args)
 		char mvpmenutitle[512];
 		Format(mvpmenutitle, sizeof(mvpmenutitle), "%T", "MVP Menu Title", client);
 		mvp_menu.SetTitle(mvpmenutitle);
-		
-		char mute[PLATFORM_MAX_PATH];
-		Format(mute, sizeof(mute), "%T", "Mute MVP", client);
-		mvp_menu.AddItem("mute", mute);
-		
-		char unmute[PLATFORM_MAX_PATH];
-		Format(unmute, sizeof(unmute), "%T", "UnMute MVP", client);
-		mvp_menu.AddItem("unmute", unmute);
 		
 		char nomvp[PLATFORM_MAX_PATH];
 		Format(nomvp, sizeof(nomvp), "%T", "NO MVP", client);
@@ -231,31 +213,41 @@ public Action Command_MVP(int client,int args)
 	return Plugin_Handled;
 }
 
-public Action Command_MuteMVP(int client,int args)
+public Action Command_MVPVol(int client,int args)
 {
-	CPrintToChat(client, "%T", "Mute", client);
-	
-	MuteMVP[client] = true;
-	SetClientCookie(client, mvp_cookie2, "1");
-}
-
-public Action Command_UnMuteMVP(int client,int args)
-{
-	CPrintToChat(client, "%T", "Un Mute", client);
-	
-	MuteMVP[client] = false;
-	SetClientCookie(client, mvp_cookie2, "0");
+	if (IsValidClient(client))
+	{
+		char arg[20];
+		float volume;
+		
+		if (args < 1)
+		{
+			CPrintToChat(client, "%T", "Volume 1", client);
+			return Plugin_Handled;
+		}
+			
+		GetCmdArg(1, arg, sizeof(arg));
+		volume = StringToFloat(arg);
+		
+		if (volume < 0.0 || volume > 1.0)
+		{
+			CPrintToChat(client, "%T", "Volume 1", client);
+			return Plugin_Handled;
+		}
+		
+		VolMVP[client] = StringToFloat(arg);
+		CPrintToChat(client, "%T", "Volume 2", client, VolMVP[client]);
+		
+		SetClientCookie(client, mvp_cookie2, arg);
+	}
+	return Plugin_Handled;
 }
 
 public Action Command_Test(int client,int args)
 {
 	if (IsValidClient(client) && !IsFakeClient(client))
 	{
-		if(MuteMVP[client])
-			PrintToChat(client, "You Mute MVP");
-			
-		if(!MuteMVP[client])
-			PrintToChat(client, "You Are Not Mute MVP");
+		PrintToChat(client, "You're MVP volume is %f", VolMVP[client]);
 			
 		int mvp = Selected[client];
 		

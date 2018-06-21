@@ -37,7 +37,7 @@
 	
 	"MVP"
 	{
-		"#format"		"{1:s},{2:s}"
+		"#format"		"{1:N},{2:s}"
 		"en"			"Playing <font color='#B15BFF'>{1}</font>s MVP Anthem - <font color='#FF0000'>{2}</font>"
 		"zho"			"正在播放<font color='#B15BFF'>{1}</font> 的MVP音樂 \n <font color='#FF0000'>{2}</font>"
 	}

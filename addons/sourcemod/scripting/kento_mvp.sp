@@ -25,11 +25,12 @@
 
 #pragma newdecls required
 
-int MVPCount, Selected[MAXPLAYERS + 1] = {-1, ...};
+int MVPCount, Selected[MAXPLAYERS + 1];
 
 char Configfile[PLATFORM_MAX_PATH], 
 	g_sMVPName[MAX_MVP_COUNT + 1][PLATFORM_MAX_PATH + 1], 
-	g_sMVPFile[MAX_MVP_COUNT + 1][PLATFORM_MAX_PATH + 1];
+	g_sMVPFile[MAX_MVP_COUNT + 1][PLATFORM_MAX_PATH + 1],
+	NameMVP[MAXPLAYERS + 1][PLATFORM_MAX_PATH];
 
 Handle mvp_cookie, mvp_cookie2;
 
@@ -49,13 +50,11 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_mvp", Command_MVP, "Select Your MVP Anthem");
 	RegConsoleCmd("sm_mvpvol", Command_MVPVol, "MVP Volume");
 	
-	RegAdminCmd("sm_mvptest", Command_Test, ADMFLAG_ROOT, "Use this to check your MVP Anthem plugin works fine or not.");
-	
 	HookEvent("round_mvp", Event_RoundMVP);
 	
 	LoadTranslations("kento.mvp.phrases");
 	
-	mvp_cookie = RegClientCookie("mvp_cookie", "Player's MVP Anthem", CookieAccess_Private);
+	mvp_cookie = RegClientCookie("mvp_name", "Player's MVP Anthem", CookieAccess_Private);
 	mvp_cookie2 = RegClientCookie("mvp_vol", "Player MVP volume", CookieAccess_Private);
 	
 	for(int i = 1; i <= MaxClients; i++)
@@ -77,10 +76,15 @@ public void OnClientCookiesCached(int client)
 	GetClientCookie(client, mvp_cookie, scookie, sizeof(scookie));
 	if(!StrEqual(scookie, ""))
 	{
-		int icookie = StringToInt(scookie);
-		Selected[client] = icookie;
+		Selected[client] = FindMVPIDByName(scookie);
+		if(Selected[client] != 0)	strcopy(NameMVP[client], sizeof(NameMVP[]), scookie);
+		else 
+		{
+			NameMVP[client] = "";
+			SetClientCookie(client, mvp_cookie, "");
+		}
 	}
-	else if(StrEqual(scookie,""))	Selected[client] = 0;	
+	else if(StrEqual(scookie,""))	NameMVP[client] = "";	
 		
 	GetClientCookie(client, mvp_cookie2, scookie, sizeof(scookie));
 	if(!StrEqual(scookie, ""))
@@ -98,21 +102,22 @@ public void OnConfigsExecuted()
 public Action Event_RoundMVP(Handle event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
+	
+	if(StrEqual(NameMVP[client], "") || Selected[client] == 0)	return;
+	
 	int mvp = Selected[client];
-	char clientname [PLATFORM_MAX_PATH];
-	GetClientName(client, clientname, sizeof(clientname));
 	
 	char sound[PLATFORM_MAX_PATH + 1];
-	Format(sound, sizeof(sound), "*/%s", g_sMVPFile[mvp])
+	Format(sound, sizeof(sound), "*/%s", g_sMVPFile[mvp]);
 	
-	if (IsValidClient(client) && !IsFakeClient(client) && Selected[client] > 0)
+	if (IsValidClient(client) && !IsFakeClient(client))
 	{
 		for(int i = 1; i <= MaxClients; i++)
 		{
 			if (IsValidClient(i) && !IsFakeClient(i))
 			{
 				// Announce MVP
-				PrintHintText(i, "%T", "MVP", client, clientname, g_sMVPName[mvp]);
+				PrintHintText(i, "%T", "MVP", client, client, g_sMVPName[mvp]);
 					
 				// Mute game sound
 				// https://forums.alliedmods.net/showthread.php?t=227735
@@ -124,6 +129,21 @@ public Action Event_RoundMVP(Handle event, const char[] name, bool dontBroadcast
 		}
 	}
 }	
+
+int FindMVPIDByName(char [] name)
+{
+	int id;
+	
+	for(int i = 1; i < MVPCount; i++)
+	{
+		if(StrEqual(g_sMVPName[i], name))
+		{
+			id = i;	break;
+		}
+	}
+	
+	return id;
+}
 
 void LoadConfig()
 {
@@ -141,8 +161,8 @@ void LoadConfig()
 	// Read Config
 	if(kv.GotoFirstSubKey())
 	{
-		char name[MAX_MVP_COUNT];
-		char file[MAX_MVP_COUNT];
+		char name[PLATFORM_MAX_PATH];
+		char file[PLATFORM_MAX_PATH];
 		
 		do
 		{
@@ -173,17 +193,22 @@ public int MVPMenuHandler(Menu menu, MenuAction action, int client,int param)
 {
 	if(action == MenuAction_Select)
 	{
-		char smvp_id[10];
-		GetMenuItem(menu, param, smvp_id, sizeof(smvp_id));
+		char mvp_name[10];
+		GetMenuItem(menu, param, mvp_name, sizeof(mvp_name));
 		
-		int imvp_id = StringToInt(smvp_id, sizeof(smvp_id));
-			
-		if(imvp_id == 0)	CPrintToChat(client, "%T", "No Selected", client);
-	
-		else if(imvp_id > 0)	CPrintToChat(client, "%T", "Selected", client, g_sMVPName[imvp_id]);
-
-		Selected[client] = imvp_id;
-		SetClientCookie(client, mvp_cookie, smvp_id);
+		if(StrEqual(mvp_name, ""))
+		{
+			CPrintToChat(client, "%T", "No Selected", client);
+			Selected[client] = 0;
+		}
+		else
+		{
+			CPrintToChat(client, "%T", "Selected", client, mvp_name);
+			Selected[client] = FindMVPIDByName(mvp_name);
+		}
+		
+		strcopy(NameMVP[client], sizeof(NameMVP[]), mvp_name);
+		SetClientCookie(client, mvp_cookie, mvp_name);
 	}
 }
 
@@ -199,13 +224,11 @@ public Action Command_MVP(int client,int args)
 		
 		char nomvp[PLATFORM_MAX_PATH];
 		Format(nomvp, sizeof(nomvp), "%T", "NO MVP", client);
-		mvp_menu.AddItem("0", nomvp);
+		mvp_menu.AddItem("", nomvp);
 		
 		for(int i = 1; i < MVPCount; i++)
 		{
-			char mvp_id[PLATFORM_MAX_PATH];
-			Format(mvp_id, sizeof(mvp_id), "%i", i);
-			mvp_menu.AddItem(mvp_id, g_sMVPName[i]);
+			mvp_menu.AddItem(g_sMVPName[i], g_sMVPName[i]);
 		}
 		
 		mvp_menu.Display(client, 0);
@@ -242,30 +265,6 @@ public Action Command_MVPVol(int client,int args)
 	}
 	return Plugin_Handled;
 }
-
-public Action Command_Test(int client,int args)
-{
-	if (IsValidClient(client) && !IsFakeClient(client))
-	{
-		PrintToChat(client, "You're MVP volume is %f", VolMVP[client]);
-			
-		int mvp = Selected[client];
-		
-		PrintToChat(client, "You're MVP is ID %i, Name %s", Selected[client], g_sMVPName[mvp]);
-		
-		PrintToChat(client, "Check console output for all MVP id and name in your config");
-			
-		PrintToConsole(client, "********** Custom MVP **********");
-		for(int i = 1; i < MVPCount; i++)
-		{
-			char mvp_id[PLATFORM_MAX_PATH];
-			Format(mvp_id, sizeof(mvp_id), "%d", i);
-			PrintToConsole(client, "ID %i, Name %s, File %s", i, g_sMVPName[i], g_sMVPFile[i]);
-		}
-	}
-	return Plugin_Handled;
-}
-
 
 stock bool IsValidClient(int client)
 {

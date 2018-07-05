@@ -27,10 +27,10 @@
 
 int MVPCount, Selected[MAXPLAYERS + 1];
 
-char Configfile[PLATFORM_MAX_PATH], 
-	g_sMVPName[MAX_MVP_COUNT + 1][PLATFORM_MAX_PATH + 1], 
-	g_sMVPFile[MAX_MVP_COUNT + 1][PLATFORM_MAX_PATH + 1],
-	NameMVP[MAXPLAYERS + 1][PLATFORM_MAX_PATH];
+char Configfile[1024], 
+	g_sMVPName[MAX_MVP_COUNT + 1][1024], 
+	g_sMVPFile[MAX_MVP_COUNT + 1][1024],
+	NameMVP[MAXPLAYERS + 1][1024];
 
 Handle mvp_cookie, mvp_cookie2;
 
@@ -107,7 +107,7 @@ public Action Event_RoundMVP(Handle event, const char[] name, bool dontBroadcast
 	
 	int mvp = Selected[client];
 	
-	char sound[PLATFORM_MAX_PATH + 1];
+	char sound[1024];
 	Format(sound, sizeof(sound), "*/%s", g_sMVPFile[mvp]);
 	
 	if (IsValidClient(client) && !IsFakeClient(client))
@@ -147,7 +147,7 @@ int FindMVPIDByName(char [] name)
 
 void LoadConfig()
 {
-	BuildPath(Path_SM, Configfile, PLATFORM_MAX_PATH, "configs/kento_mvp.cfg");
+	BuildPath(Path_SM, Configfile, 1024, "configs/kento_mvp.cfg");
 	
 	if(!FileExists(Configfile))
 		SetFailState("Can not find config file \"%s\"!", Configfile);
@@ -161,8 +161,8 @@ void LoadConfig()
 	// Read Config
 	if(kv.GotoFirstSubKey())
 	{
-		char name[PLATFORM_MAX_PATH];
-		char file[PLATFORM_MAX_PATH];
+		char name[1024];
+		char file[1024];
 		
 		do
 		{
@@ -172,11 +172,11 @@ void LoadConfig()
 			strcopy(g_sMVPName[MVPCount], sizeof(g_sMVPName[]), name);
 			strcopy(g_sMVPFile[MVPCount], sizeof(g_sMVPFile[]), file);
 				
-			char filepath[PLATFORM_MAX_PATH];
+			char filepath[1024];
 			Format(filepath, sizeof(filepath), "sound/%s", g_sMVPFile[MVPCount])
 			AddFileToDownloadsTable(filepath);
 			
-			char soundpath[PLATFORM_MAX_PATH];
+			char soundpath[1024];
 			Format(soundpath, sizeof(soundpath), "*/%s", g_sMVPFile[MVPCount]);
 			FakePrecacheSound(soundpath);
 			
@@ -222,7 +222,7 @@ public Action Command_MVP(int client,int args)
 		Format(mvpmenutitle, sizeof(mvpmenutitle), "%T", "MVP Menu Title", client);
 		mvp_menu.SetTitle(mvpmenutitle);
 		
-		char nomvp[PLATFORM_MAX_PATH];
+		char nomvp[1024];
 		Format(nomvp, sizeof(nomvp), "%T", "NO MVP", client);
 		mvp_menu.AddItem("", nomvp);
 		

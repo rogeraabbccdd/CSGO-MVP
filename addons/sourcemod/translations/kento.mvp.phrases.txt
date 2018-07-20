@@ -16,23 +16,16 @@
 	
 	"MVP Menu Title"
 	{
-		"#format"		""
-		"en"			"Select Your Custom MVP Anthem:"
-		"zho"			"選擇你的MVP音樂:"	
+		"#format"		"{1:s},{2:.2f}"
+		"en"			"Select Your Custom MVP Anthem:\nSelected:{1}\nVolume:{2}"
+		"zho"			"選擇你的MVP音樂:\目前音樂:{1}\n音量:{2}"	
 	}
 	
-	"Mute MVP"
+	"No MVP"
 	{
 		"#format"		""
-		"en"			"Mute MVP Anthem."
-		"zho"			"靜音MVP音樂"
-	}
-	
-	"UnMute MVP"
-	{
-		"#format"		""
-		"en"			"UnMute MVP Anthem."
-		"zho"			"取消靜音MVP音樂"
+		"en"			"No MVP Anthem."
+		"zho"			"無MVP音樂"
 	}
 	
 	"MVP"

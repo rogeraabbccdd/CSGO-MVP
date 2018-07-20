@@ -57,9 +57,10 @@ public void OnPluginStart()
 	mvp_cookie = RegClientCookie("mvp_name", "Player's MVP Anthem", CookieAccess_Private);
 	mvp_cookie2 = RegClientCookie("mvp_vol", "Player MVP volume", CookieAccess_Private);
 	
+
 	for(int i = 1; i <= MaxClients; i++)
 	{ 
-		if(IsValidClient(i) && !IsFakeClient(i))	OnClientCookiesCached(i);
+		if(IsValidClient(i) && !IsFakeClient(i) && !AreClientCookiesCached(i))	OnClientCookiesCached(i);
 	}
 }
 
@@ -72,12 +73,12 @@ public void OnClientCookiesCached(int client)
 {
 	if(!IsValidClient(client) && IsFakeClient(client))	return;
 		
-	char scookie[8];
+	char scookie[1024];
 	GetClientCookie(client, mvp_cookie, scookie, sizeof(scookie));
 	if(!StrEqual(scookie, ""))
 	{
 		Selected[client] = FindMVPIDByName(scookie);
-		if(Selected[client] != 0)	strcopy(NameMVP[client], sizeof(NameMVP[]), scookie);
+		if(Selected[client] > 0)	strcopy(NameMVP[client], sizeof(NameMVP[]), scookie);
 		else 
 		{
 			NameMVP[client] = "";
@@ -93,6 +94,7 @@ public void OnClientCookiesCached(int client)
 	}
 	else if(StrEqual(scookie,""))	VolMVP[client] = 1.0;
 }
+
 
 public void OnConfigsExecuted()
 {
@@ -132,14 +134,11 @@ public Action Event_RoundMVP(Handle event, const char[] name, bool dontBroadcast
 
 int FindMVPIDByName(char [] name)
 {
-	int id;
+	int id = 0;
 	
-	for(int i = 1; i < MVPCount; i++)
+	for(int i = 1; i <= MVPCount; i++)
 	{
-		if(StrEqual(g_sMVPName[i], name))
-		{
-			id = i;	break;
-		}
+		if(StrEqual(g_sMVPName[i], name))	id = i;
 	}
 	
 	return id;
@@ -193,7 +192,7 @@ public int MVPMenuHandler(Menu menu, MenuAction action, int client,int param)
 {
 	if(action == MenuAction_Select)
 	{
-		char mvp_name[10];
+		char mvp_name[1024];
 		GetMenuItem(menu, param, mvp_name, sizeof(mvp_name));
 		
 		if(StrEqual(mvp_name, ""))
@@ -217,9 +216,13 @@ public Action Command_MVP(int client,int args)
 	if (IsValidClient(client) && !IsFakeClient(client))
 	{
 		Menu mvp_menu = new Menu(MVPMenuHandler);
-	
-		char mvpmenutitle[512];
-		Format(mvpmenutitle, sizeof(mvpmenutitle), "%T", "MVP Menu Title", client);
+		
+		char name[1024];
+		if(StrEqual(NameMVP[client], ""))	Format(name, sizeof(name), "%T", "No MVP", client);
+		else Format(name, sizeof(name), NameMVP[client]);
+		
+		char mvpmenutitle[1024];
+		Format(mvpmenutitle, sizeof(mvpmenutitle), "%T", "MVP Menu Title", client, name, VolMVP[client]);
 		mvp_menu.SetTitle(mvpmenutitle);
 		
 		char nomvp[1024];

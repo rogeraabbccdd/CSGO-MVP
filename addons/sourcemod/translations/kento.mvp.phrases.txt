@@ -14,18 +14,46 @@
 		"zho"			"無MVP音樂."
 	}
 	
-	"MVP Menu Title"
-	{
-		"#format"		"{1:s},{2:.2f}"
-		"en"			"Select Your Custom MVP Anthem:\nSelected:{1}\nVolume:{2}"
-		"zho"			"選擇你的MVP音樂:\目前音樂:{1}\n音量:{2}"	
-	}
-	
-	"No MVP"
+	"Vol Menu Title"
 	{
 		"#format"		""
-		"en"			"No MVP Anthem."
-		"zho"			"無MVP音樂"
+		"en"			"Select MVP Anthem Volume"
+		"zho"			"選擇MVP音樂音量"	
+	}
+	
+	"MVP Menu Title"
+	{
+		"#format"		""
+		"en"			"Select Your Custom MVP Anthem"
+		"zho"			"選擇你的MVP音樂"	
+	}
+	
+	"Vol Menu Title 2"
+	{
+		"#format"		"{1:.2f}"
+		"en"			"Select MVP Anthem Volume\nCurrent Volume:{1}"
+		"zho"			"選擇MVP音樂音量\n目前音量:{1}"	
+	}
+	
+	"Mute"
+	{
+		"#format"		""
+		"en"			"Mute"
+		"zho"			"靜音"	
+	}
+	
+	"MVP Menu Title 2"
+	{
+		"#format"		"{1:s}"
+		"en"			"Select Your Custom MVP Anthem\nSelected:{1}"
+		"zho"			"選擇你的MVP音樂\n目前音樂:{1}"	
+	}
+	
+	"Setting Menu Title"
+	{
+		"#format"		"{1:s},{2:.2f}"
+		"en"			"MVP Anthem Menu\nSelected:{1}\nVolume:{2}"
+		"zho"			"MVP音樂選單\n目前音樂:{1}\n音量:{2}"	
 	}
 	
 	"MVP"

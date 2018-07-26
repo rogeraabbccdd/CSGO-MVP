@@ -40,7 +40,7 @@ public Plugin myinfo =
 {
 	name = "[CS:GO] Custom MVP Anthem",
 	author = "Kento",
-	version = "1.9",
+	version = "1.10",
 	description = "Custom MVP Anthem",
 	url = "https://github.com/rogeraabbccdd/csgo_mvp"
 };
@@ -188,6 +188,78 @@ void LoadConfig()
 	delete kv;
 }
 
+public Action Command_MVP(int client,int args)
+{
+	if (IsValidClient(client) && !IsFakeClient(client))
+	{
+		Menu settings_menu = new Menu(SettingsMenuHandler);
+		
+		char name[1024];
+		if(StrEqual(NameMVP[client], ""))	Format(name, sizeof(name), "%T", "No MVP", client);
+		else Format(name, sizeof(name), NameMVP[client]);
+		
+		char menutitle[1024];
+		Format(menutitle, sizeof(menutitle), "%T", "Setting Menu Title", client, name, VolMVP[client]);
+		settings_menu.SetTitle(menutitle);
+		
+		char mvpmenu[1024], volmenu[1024];
+		Format(mvpmenu, sizeof(mvpmenu), "%T", "MVP Menu Title", client);
+		Format(volmenu, sizeof(volmenu), "%T", "Vol Menu Title", client);
+		
+		settings_menu.AddItem("mvp", mvpmenu);
+		settings_menu.AddItem("vol", volmenu);
+		
+		settings_menu.Display(client, 0);
+	}
+	
+	return Plugin_Handled;
+}
+
+public int SettingsMenuHandler(Menu menu, MenuAction action, int client, int param)
+{
+	if(action == MenuAction_Select)
+	{
+		char select[1024];
+		GetMenuItem(menu, param, select, sizeof(select));
+		
+		if(StrEqual(select, "mvp"))
+		{
+			DisplayMVPMenu(client);
+		}
+		else if(StrEqual(select, "vol"))
+		{
+			DisplayVolMenu(client);
+		}
+	}
+}
+
+void DisplayMVPMenu(int client)
+{
+	if (IsValidClient(client) && !IsFakeClient(client))
+	{
+		Menu mvp_menu = new Menu(MVPMenuHandler);
+		
+		char name[1024];
+		if(StrEqual(NameMVP[client], ""))	Format(name, sizeof(name), "%T", "No MVP", client);
+		else Format(name, sizeof(name), NameMVP[client]);
+		
+		char mvpmenutitle[1024];
+		Format(mvpmenutitle, sizeof(mvpmenutitle), "%T", "MVP Menu Title 2", client, name);
+		mvp_menu.SetTitle(mvpmenutitle);
+		
+		char nomvp[1024];
+		Format(nomvp, sizeof(nomvp), "%T", "NO MVP", client);
+		mvp_menu.AddItem("", nomvp);
+		
+		for(int i = 1; i < MVPCount; i++)
+		{
+			mvp_menu.AddItem(g_sMVPName[i], g_sMVPName[i]);
+		}
+		
+		mvp_menu.Display(client, 0);
+	}
+}
+
 public int MVPMenuHandler(Menu menu, MenuAction action, int client,int param)
 {
 	if(action == MenuAction_Select)
@@ -211,32 +283,45 @@ public int MVPMenuHandler(Menu menu, MenuAction action, int client,int param)
 	}
 }
 
-public Action Command_MVP(int client,int args)
+void DisplayVolMenu(int client)
 {
 	if (IsValidClient(client) && !IsFakeClient(client))
 	{
-		Menu mvp_menu = new Menu(MVPMenuHandler);
+		Menu vol_menu = new Menu(VolMenuHandler);
 		
-		char name[1024];
-		if(StrEqual(NameMVP[client], ""))	Format(name, sizeof(name), "%T", "No MVP", client);
-		else Format(name, sizeof(name), NameMVP[client]);
+		char vol[1024];
+		if(VolMVP[client] > 0.00)	Format(vol, sizeof(vol), "%.2f", VolMVP[client]);
+		else Format(vol, sizeof(vol), "%T", "Mute");
 		
-		char mvpmenutitle[1024];
-		Format(mvpmenutitle, sizeof(mvpmenutitle), "%T", "MVP Menu Title", client, name, VolMVP[client]);
-		mvp_menu.SetTitle(mvpmenutitle);
+		char menutitle[1024];
+		Format(menutitle, sizeof(menutitle), "%T", "Vol Menu Title 2", client, vol);
+		vol_menu.SetTitle(menutitle);
 		
-		char nomvp[1024];
-		Format(nomvp, sizeof(nomvp), "%T", "NO MVP", client);
-		mvp_menu.AddItem("", nomvp);
+		char mute[1024];
+		Format(mute, sizeof(mute), "%T", "Mute", client);
 		
-		for(int i = 1; i < MVPCount; i++)
-		{
-			mvp_menu.AddItem(g_sMVPName[i], g_sMVPName[i]);
-		}
-		
-		mvp_menu.Display(client, 0);
+		vol_menu.AddItem("0", mute);
+		vol_menu.AddItem("0.2", "20%");
+		vol_menu.AddItem("0.4", "40%");
+		vol_menu.AddItem("0.6", "60%");
+		vol_menu.AddItem("0.8", "80%");
+		vol_menu.AddItem("1.0", "100%");
+		vol_menu.Display(client, 0);
 	}
-	return Plugin_Handled;
+}
+
+public int VolMenuHandler(Menu menu, MenuAction action, int client,int param)
+{
+	if(action == MenuAction_Select)
+	{
+		char vol[1024];
+		GetMenuItem(menu, param, vol, sizeof(vol));
+		
+		VolMVP[client] = StringToFloat(vol);
+		CPrintToChat(client, "%T", "Volume 2", client, VolMVP[client]);
+		
+		SetClientCookie(client, mvp_cookie2, vol);
+	}
 }
 
 public Action Command_MVPVol(int client,int args)

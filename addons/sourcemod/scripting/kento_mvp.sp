@@ -248,7 +248,7 @@ void DisplayMVPMenu(int client)
 		mvp_menu.SetTitle(mvpmenutitle);
 		
 		char nomvp[1024];
-		Format(nomvp, sizeof(nomvp), "%T", "NO MVP", client);
+		Format(nomvp, sizeof(nomvp), "%T", "No MVP", client);
 		mvp_menu.AddItem("", nomvp);
 		
 		for(int i = 1; i < MVPCount; i++)

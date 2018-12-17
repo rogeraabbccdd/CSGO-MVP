@@ -291,7 +291,7 @@ void DisplayVolMenu(int client)
 		
 		char vol[1024];
 		if(VolMVP[client] > 0.00)	Format(vol, sizeof(vol), "%.2f", VolMVP[client]);
-		else Format(vol, sizeof(vol), "%T", "Mute");
+		else Format(vol, sizeof(vol), "%T", "Mute", client);
 		
 		char menutitle[1024];
 		Format(menutitle, sizeof(menutitle), "%T", "Vol Menu Title 2", client, vol);

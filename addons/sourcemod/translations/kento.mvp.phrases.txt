@@ -3,7 +3,7 @@
 //**********************************************************************************************************************
 //                                     http://i.imgur.com/q2wb8Cu.png                                                  *
 //{NORMAL} = x01 | {DARKRED} = x02 | {PINK} = x03 | {GREEN} = x04 | {YELLOW} = x09 | {LIGHTGREEN} = x06 | {RED} = x07  *
-//{GRAY} = x08 | {BLUE} = x0B | {DARKBLUE} = x0C | {PURPLE} = x0E|  {ORANGE} = x10                                     *
+//{GRAY} = x08 | {BLUE} = x0B | {DARKBLUE} = x0C | {PURPLE} = x0E |  {ORANGE} = x10                                    *
 //**********************************************************************************************************************
 "Phrases"
 {
@@ -80,7 +80,7 @@
 	"Volume 1"
 	{
 		"#format"		""
-		"en"			"{GREEN}[MVP] {NORMAL}Volume values must be {RED}0.0- 1.0"
+		"en"			"{GREEN}[MVP] {NORMAL}Volume values must be {RED}0.0 - 1.0"
 		"zho"			"{GREEN}[MVP] {NORMAL}音量大小限制為 {RED}0.0 - 1.0"
 	}
 	

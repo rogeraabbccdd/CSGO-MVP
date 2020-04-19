@@ -1,0 +1,69 @@
+//**********************************************  Valid Colors	********************************************************
+// {NORMAL}, {DARKRED}, {PINK}, {YELLOW}, {GREEN}, {LIGHTGREEN}, {RED}, {GRAY}, {BLUE}, {DARKBLUE}, {PURPLE}, {ORANGE} *
+//**********************************************************************************************************************
+//                                     http://i.imgur.com/q2wb8Cu.png                                                  *
+//{NORMAL} = x01 | {DARKRED} = x02 | {PINK} = x03 | {GREEN} = x04 | {YELLOW} = x09 | {LIGHTGREEN} = x06 | {RED} = x07  *
+//{GRAY} = x08 | {BLUE} = x0B | {DARKBLUE} = x0C | {PURPLE} = x0E |  {ORANGE} = x10                                    *
+//**********************************************************************************************************************
+"Phrases"
+{
+	"No MVP"
+	{
+		"en"			"Nenhum MVP personalizado"
+	}
+	
+	"Vol Menu Title"
+	{
+		"en"			"Selecione volume do MVP"
+	}
+	
+	"MVP Menu Title"
+	{
+		"en"			"Selecione MVP"
+	}
+	
+	"Vol Menu Title 2"
+	{
+		"en"			"Selecione volume do MVP\nVolume atual: {1}\nDigite: !mvpvol para ajuste do volume"
+	}
+	
+	"Mute"
+	{
+		"en"			"Mute"
+	}
+	
+	"MVP Menu Title 2"
+	{
+		"en"			"Selecione MVP\nSelecionado:{1}"
+	}
+	
+	"Setting Menu Title"
+	{
+		"en"			"Menu MVP\nSelecionado:{1}\nVolume:{2}"
+	}
+	
+	"MVP"
+	{
+		"en"			"Playing <font color='#B15BFF'>{1}</font>s MVP Anthem - <font color='#FF0000'>{2}</font>"
+	}
+	
+	"Selected"
+	{
+		"en"			"{NORMAL}[{DARKRED}MVP{NORMAL}] {GREEN}Seu MVP é {PINK}{1}."
+	}
+	
+	"No Selected"
+	{
+		"en"			"{NORMAL}[{DARKRED}MVP{NORMAL}] {GREEN}Não selecionou nenhum MVP."
+	}
+	
+	"Volume 1"
+	{
+		"en"			"{NORMAL}[{DARKRED}MVP{NORMAL}] {GREEN}Valores do volume devem ser {RED}0.0 - 1.0"
+	}
+	
+	"Volume 2"
+	{
+		"en"			"{NORMAL}[{DARKRED}MVP{NORMAL}] {GREEN}Volume está definido como {PINK}{1}"
+	}
+}	

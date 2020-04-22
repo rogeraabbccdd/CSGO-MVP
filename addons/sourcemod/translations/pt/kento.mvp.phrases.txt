@@ -9,61 +9,61 @@
 {
 	"No MVP"
 	{
-		"en"			"Nenhum MVP personalizado"
+		"pt"			"Nenhum MVP personalizado"
 	}
 	
 	"Vol Menu Title"
 	{
-		"en"			"Selecione volume do MVP"
+		"pt"			"Selecione volume do MVP"
 	}
 	
 	"MVP Menu Title"
 	{
-		"en"			"Selecione MVP"
+		"pt"			"Selecione MVP"
 	}
 	
 	"Vol Menu Title 2"
 	{
-		"en"			"Selecione volume do MVP\nVolume atual: {1}\nDigite: !mvpvol para ajuste do volume"
+		"pt"			"Selecione volume do MVP\nVolume atual: {1}\nDigite: !mvpvol para ajuste do volume"
 	}
 	
 	"Mute"
 	{
-		"en"			"Mute"
+		"pt"			"Mute"
 	}
 	
 	"MVP Menu Title 2"
 	{
-		"en"			"Selecione MVP\nSelecionado:{1}"
+		"pt"			"Selecione MVP\nSelecionado:{1}"
 	}
 	
 	"Setting Menu Title"
 	{
-		"en"			"Menu MVP\nSelecionado:{1}\nVolume:{2}"
+		"pt"			"Menu MVP\nSelecionado:{1}\nVolume:{2}"
 	}
 	
 	"MVP"
 	{
-		"en"			"Playing <font color='#B15BFF'>{1}</font>s MVP Anthem - <font color='#FF0000'>{2}</font>"
+		"pt"			"Playing <font color='#B15BFF'>{1}</font>s MVP Anthem - <font color='#FF0000'>{2}</font>"
 	}
 	
 	"Selected"
 	{
-		"en"			"{NORMAL}[{DARKRED}MVP{NORMAL}] {GREEN}Seu MVP é {PINK}{1}."
+		"pt"			"{NORMAL}[{DARKRED}MVP{NORMAL}] {GREEN}Seu MVP é {PINK}{1}."
 	}
 	
 	"No Selected"
 	{
-		"en"			"{NORMAL}[{DARKRED}MVP{NORMAL}] {GREEN}Não selecionou nenhum MVP."
+		"pt"			"{NORMAL}[{DARKRED}MVP{NORMAL}] {GREEN}Não selecionou nenhum MVP."
 	}
 	
 	"Volume 1"
 	{
-		"en"			"{NORMAL}[{DARKRED}MVP{NORMAL}] {GREEN}Valores do volume devem ser {RED}0.0 - 1.0"
+		"pt"			"{NORMAL}[{DARKRED}MVP{NORMAL}] {GREEN}Valores do volume devem ser {RED}0.0 - 1.0"
 	}
 	
 	"Volume 2"
 	{
-		"en"			"{NORMAL}[{DARKRED}MVP{NORMAL}] {GREEN}Volume está definido como {PINK}{1}"
+		"pt"			"{NORMAL}[{DARKRED}MVP{NORMAL}] {GREEN}Volume está definido como {PINK}{1}"
 	}
 }	

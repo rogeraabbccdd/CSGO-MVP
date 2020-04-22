@@ -28,7 +28,7 @@
 		"#format"		""
 		"en"			"Select Your Custom MVP Anthem"
 		"zho"			"選擇你的MVP音樂"
-		"pt"			"Selecione MVP"
+		"pt"			"Selecione seu MVP"
 	}
 	
 	"Vol Menu Title 2"
@@ -68,7 +68,7 @@
 		"#format"		"{1:N},{2:s}"
 		"en"			"Playing <font color='#B15BFF'>{1}</font>s MVP Anthem - <font color='#FF0000'>{2}</font>"
 		"zho"			"正在播放<font color='#B15BFF'>{1}</font> 的MVP音樂 \n <font color='#FF0000'>{2}</font>"
-		"pt"			"Tocando <font color='#B15BFF'>{1}</font>s MVP - <font color='#FF0000'>{2}</font>"
+		"pt"			"Tocando <font color='#B15BFF'>{1}</font> MVP - <font color='#FF0000'>{2}</font>"
 	}
 	
 	"Selected"

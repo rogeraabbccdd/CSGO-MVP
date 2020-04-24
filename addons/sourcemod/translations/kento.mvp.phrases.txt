@@ -3,7 +3,7 @@
 //**********************************************************************************************************************
 //                                     http://i.imgur.com/q2wb8Cu.png                                                  *
 //{NORMAL} = x01 | {DARKRED} = x02 | {PINK} = x03 | {GREEN} = x04 | {YELLOW} = x09 | {LIGHTGREEN} = x06 | {RED} = x07  *
-//{GRAY} = x08 | {BLUE} = x0B | {DARKBLUE} = x0C | {PURPLE} = x0E|  {ORANGE} = x10                                     *
+//{GRAY} = x08 | {BLUE} = x0B | {DARKBLUE} = x0C | {PURPLE} = x0E |  {ORANGE} = x10                                    *
 //**********************************************************************************************************************
 "Phrases"
 {
@@ -12,48 +12,55 @@
 		"#format"		""
 		"en"			"No Custom MVP Anthem"
 		"zho"			"無MVP音樂."
+		"pt"			"Nenhum MVP personalizado"
 	}
 	
 	"Vol Menu Title"
 	{
 		"#format"		""
 		"en"			"Select MVP Anthem Volume"
-		"zho"			"選擇MVP音樂音量"	
+		"zho"			"選擇MVP音樂音量"
+		"pt"			"Selecione volume do MVP"
 	}
 	
 	"MVP Menu Title"
 	{
 		"#format"		""
 		"en"			"Select Your Custom MVP Anthem"
-		"zho"			"選擇你的MVP音樂"	
+		"zho"			"選擇你的MVP音樂"
+		"pt"			"Selecione seu MVP"
 	}
 	
 	"Vol Menu Title 2"
 	{
 		"#format"		"{1:.2f}"
 		"en"			"Select MVP Anthem Volume\nCurrent Volume:{1}\nUse !mvpvol for fine tuning"
-		"zho"			"選擇MVP音樂音量\n目前音量:{1}\n使用 !mvpvol 微調"	
+		"zho"			"選擇MVP音樂音量\n目前音量:{1}\n使用 !mvpvol 微調"
+		"pt"			"Selecione volume do MVP\nVolume atual: {1}\nDigite: !mvpvol para ajuste do volume"
 	}
 	
 	"Mute"
 	{
 		"#format"		""
 		"en"			"Mute"
-		"zho"			"靜音"	
+		"zho"			"靜音"
+		"pt"			"Mute"
 	}
 	
 	"MVP Menu Title 2"
 	{
 		"#format"		"{1:s}"
 		"en"			"Select Your Custom MVP Anthem\nSelected:{1}"
-		"zho"			"選擇你的MVP音樂\n目前音樂:{1}"	
+		"zho"			"選擇你的MVP音樂\n目前音樂:{1}"
+		"pt"			"Selecione seu MVP\nSelecionado:{1}"
 	}
 	
 	"Setting Menu Title"
 	{
 		"#format"		"{1:s},{2:.2f}"
 		"en"			"MVP Anthem Menu\nSelected:{1}\nVolume:{2}"
-		"zho"			"MVP音樂選單\n目前音樂:{1}\n音量:{2}"	
+		"zho"			"MVP音樂選單\n目前音樂:{1}\n音量:{2}"
+		"pt"			"Menu MVP\nSelecionado:{1}\nVolume:{2}"
 	}
 	
 	"MVP"
@@ -61,6 +68,7 @@
 		"#format"		"{1:N},{2:s}"
 		"en"			"Playing <font color='#B15BFF'>{1}</font>s MVP Anthem - <font color='#FF0000'>{2}</font>"
 		"zho"			"正在播放<font color='#B15BFF'>{1}</font> 的MVP音樂 \n <font color='#FF0000'>{2}</font>"
+		"pt"			"Tocando <font color='#B15BFF'>{1}</font> MVP - <font color='#FF0000'>{2}</font>"
 	}
 	
 	"Selected"
@@ -68,6 +76,7 @@
 		"#format"		"{1:s}"
 		"en"			"{GREEN}[MVP] {NORMAL}Your MVP Anthem is {PINK}{1}."
 		"zho"			"{GREEN}[MVP] {NORMAL}你的MVP音樂是{PINK}{1}."
+		"pt"			"{NORMAL}[{DARKRED}MVP{NORMAL}] {GREEN}Seu MVP é {PINK}{1}."
 	}
 	
 	"No Selected"
@@ -75,13 +84,15 @@
 		"#format"		""
 		"en"			"{GREEN}[MVP] {NORMAL}Your MVP Anthem is {PINK}No MVP Anthem{NORMAL}."
 		"zho"			"{GREEN}[MVP] {NORMAL}你的MVP音樂是{PINK}無MVP音樂{NORMAL}."
+		"pt"			"{NORMAL}[{DARKRED}MVP{NORMAL}] {GREEN}Não selecionou nenhum MVP."
 	}
 	
 	"Volume 1"
 	{
 		"#format"		""
-		"en"			"{GREEN}[MVP] {NORMAL}Volume values must be {RED}0.0- 1.0"
+		"en"			"{GREEN}[MVP] {NORMAL}Volume values must be {RED}0.0 - 1.0"
 		"zho"			"{GREEN}[MVP] {NORMAL}音量大小限制為 {RED}0.0 - 1.0"
+		"pt"			"{NORMAL}[{DARKRED}MVP{NORMAL}] {GREEN}Valores do volume devem ser {RED}0.0 - 1.0"
 	}
 	
 	"Volume 2"
@@ -89,5 +100,6 @@
 		"#format"		"{1:.2f}"
 		"en"			"{GREEN}[MVP] {NORMAL}Volume is set to {PINK}{1}"
 		"zho"			"{GREEN}[MVP] {NORMAL}音量設定為 {PINK}{1}"
+		"pt"			"{NORMAL}[{DARKRED}MVP{NORMAL}] {GREEN}Volume está definido como {PINK}{1}"
 	}
 }	

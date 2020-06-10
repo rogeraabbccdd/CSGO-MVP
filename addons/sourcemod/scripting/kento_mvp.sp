@@ -30,17 +30,21 @@ int MVPCount, Selected[MAXPLAYERS + 1];
 char Configfile[1024], 
 	g_sMVPName[MAX_MVP_COUNT + 1][1024], 
 	g_sMVPFile[MAX_MVP_COUNT + 1][1024],
+	g_sMVPFlag[MAX_MVP_COUNT + 1][AdminFlags_TOTAL], 
 	NameMVP[MAXPLAYERS + 1][1024];
 
 Handle mvp_cookie, mvp_cookie2;
 
 float VolMVP[MAXPLAYERS + 1];
 
+ConVar Cvar_Vol;
+float mvp_defaultVol;
+
 public Plugin myinfo =
 {
 	name = "[CS:GO] Custom MVP Anthem",
 	author = "Kento",
-	version = "1.10",
+	version = "1.11",
 	description = "Custom MVP Anthem",
 	url = "https://github.com/rogeraabbccdd/csgo_mvp"
 };
@@ -56,12 +60,26 @@ public void OnPluginStart()
 	
 	mvp_cookie = RegClientCookie("mvp_name", "Player's MVP Anthem", CookieAccess_Private);
 	mvp_cookie2 = RegClientCookie("mvp_vol", "Player MVP volume", CookieAccess_Private);
-	
+
+	Cvar_Vol = CreateConVar("mvp_defaultvol", "0.8", "Default MVP anthem volume.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	Cvar_Vol.AddChangeHook(OnConVarChanged);
 
 	for(int i = 1; i <= MaxClients; i++)
 	{ 
 		if(IsValidClient(i) && !IsFakeClient(i) && !AreClientCookiesCached(i))	OnClientCookiesCached(i);
 	}
+}
+
+public void OnConfigsExecuted()
+{
+	mvp_defaultVol = Cvar_Vol.FloatValue;
+
+	LoadConfig();
+}
+
+public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	if (convar == Cvar_Vol)	mvp_defaultVol = Cvar_Vol.FloatValue;
 }
 
 public void OnClientPutInServer(int client)
@@ -77,28 +95,27 @@ public void OnClientCookiesCached(int client)
 	GetClientCookie(client, mvp_cookie, scookie, sizeof(scookie));
 	if(!StrEqual(scookie, ""))
 	{
-		Selected[client] = FindMVPIDByName(scookie);
-		if(Selected[client] > 0)	strcopy(NameMVP[client], sizeof(NameMVP[]), scookie);
+		int id = FindMVPIDByName(scookie)
+	
+		if(CanUseMVP(client, id) && id > 0)
+		{
+			Selected[client] = id;
+			strcopy(NameMVP[client], sizeof(NameMVP[]), scookie);
+		}
 		else 
 		{
-			NameMVP[client] = "";
+			Format(NameMVP[client], sizeof(NameMVP[]), "");
 			SetClientCookie(client, mvp_cookie, "");
 		}
 	}
-	else if(StrEqual(scookie,""))	NameMVP[client] = "";	
+	else if(StrEqual(scookie,""))	Format(NameMVP[client], sizeof(NameMVP[]), "");
 		
 	GetClientCookie(client, mvp_cookie2, scookie, sizeof(scookie));
 	if(!StrEqual(scookie, ""))
 	{
 		VolMVP[client] = StringToFloat(scookie);
 	}
-	else if(StrEqual(scookie,""))	VolMVP[client] = 1.0;
-}
-
-
-public void OnConfigsExecuted()
-{
-	LoadConfig();
+	else if(StrEqual(scookie,""))	VolMVP[client] = mvp_defaultVol;
 }
 
 public Action Event_RoundMVP(Handle event, const char[] name, bool dontBroadcast)
@@ -162,14 +179,17 @@ void LoadConfig()
 	{
 		char name[1024];
 		char file[1024];
+		char flag[AdminFlags_TOTAL];
 		
 		do
 		{
 			kv.GetSectionName(name, sizeof(name));
-			kv.GetString("file", file, sizeof(file));				
+			kv.GetString("file", file, sizeof(file));
+			kv.GetString("flag", flag, sizeof(flag), "");
 			
 			strcopy(g_sMVPName[MVPCount], sizeof(g_sMVPName[]), name);
 			strcopy(g_sMVPFile[MVPCount], sizeof(g_sMVPFile[]), file);
+			strcopy(g_sMVPFlag[MVPCount], sizeof(g_sMVPFlag[]), flag);
 				
 			char filepath[1024];
 			Format(filepath, sizeof(filepath), "sound/%s", g_sMVPFile[MVPCount])
@@ -192,27 +212,32 @@ public Action Command_MVP(int client,int args)
 {
 	if (IsValidClient(client) && !IsFakeClient(client))
 	{
-		Menu settings_menu = new Menu(SettingsMenuHandler);
-		
-		char name[1024];
-		if(StrEqual(NameMVP[client], ""))	Format(name, sizeof(name), "%T", "No MVP", client);
-		else Format(name, sizeof(name), NameMVP[client]);
-		
-		char menutitle[1024];
-		Format(menutitle, sizeof(menutitle), "%T", "Setting Menu Title", client, name, VolMVP[client]);
-		settings_menu.SetTitle(menutitle);
-		
-		char mvpmenu[1024], volmenu[1024];
-		Format(mvpmenu, sizeof(mvpmenu), "%T", "MVP Menu Title", client);
-		Format(volmenu, sizeof(volmenu), "%T", "Vol Menu Title", client);
-		
-		settings_menu.AddItem("mvp", mvpmenu);
-		settings_menu.AddItem("vol", volmenu);
-		
-		settings_menu.Display(client, 0);
+		ShowMainMenu(client);
 	}
 	
 	return Plugin_Handled;
+}
+
+void ShowMainMenu(int client)
+{
+	Menu settings_menu = new Menu(SettingsMenuHandler);
+	
+	char name[1024];
+	if(StrEqual(NameMVP[client], ""))	Format(name, sizeof(name), "%T", "No MVP", client);
+	else Format(name, sizeof(name), NameMVP[client]);
+	
+	char menutitle[1024];
+	Format(menutitle, sizeof(menutitle), "%T", "Setting Menu Title", client, name, VolMVP[client]);
+	settings_menu.SetTitle(menutitle);
+	
+	char mvpmenu[1024], volmenu[1024];
+	Format(mvpmenu, sizeof(mvpmenu), "%T", "MVP Menu Title", client);
+	Format(volmenu, sizeof(volmenu), "%T", "Vol Menu Title", client);
+	
+	settings_menu.AddItem("mvp", mvpmenu);
+	settings_menu.AddItem("vol", volmenu);
+	
+	settings_menu.Display(client, 0);
 }
 
 public int SettingsMenuHandler(Menu menu, MenuAction action, int client, int param)
@@ -224,7 +249,7 @@ public int SettingsMenuHandler(Menu menu, MenuAction action, int client, int par
 		
 		if(StrEqual(select, "mvp"))
 		{
-			DisplayMVPMenu(client);
+			DisplayMVPMenu(client, 0);
 		}
 		else if(StrEqual(select, "vol"))
 		{
@@ -233,7 +258,7 @@ public int SettingsMenuHandler(Menu menu, MenuAction action, int client, int par
 	}
 }
 
-void DisplayMVPMenu(int client)
+void DisplayMVPMenu(int client, int start)
 {
 	if (IsValidClient(client) && !IsFakeClient(client))
 	{
@@ -256,7 +281,8 @@ void DisplayMVPMenu(int client)
 			mvp_menu.AddItem(g_sMVPName[i], g_sMVPName[i]);
 		}
 		
-		mvp_menu.Display(client, 0);
+		mvp_menu.ExitBackButton = true;
+		mvp_menu.DisplayAt(client, start, 0);
 	}
 }
 
@@ -274,13 +300,24 @@ public int MVPMenuHandler(Menu menu, MenuAction action, int client,int param)
 		}
 		else
 		{
-			CPrintToChat(client, "%T", "Selected", client, mvp_name);
-			Selected[client] = FindMVPIDByName(mvp_name);
+			int id = FindMVPIDByName(mvp_name);
+
+			if(CanUseMVP(client, id))
+			{
+				CPrintToChat(client, "%T", "Selected", client, mvp_name);
+				Selected[client] = id;
+				strcopy(NameMVP[client], sizeof(NameMVP[]), mvp_name);
+				SetClientCookie(client, mvp_cookie, mvp_name);
+			}
+			else {
+				CPrintToChat(client, "%T", "No Flag", client, mvp_name);
+			}
 		}
-		
-		strcopy(NameMVP[client], sizeof(NameMVP[]), mvp_name);
-		SetClientCookie(client, mvp_cookie, mvp_name);
+		DisplayMVPMenu(client, menu.Selection);
 	}
+	else if (action == MenuAction_Cancel && param == MenuCancel_ExitBack) {
+    ShowMainMenu(client);
+  }
 }
 
 void DisplayVolMenu(int client)
@@ -306,6 +343,7 @@ void DisplayVolMenu(int client)
 		vol_menu.AddItem("0.6", "60%");
 		vol_menu.AddItem("0.8", "80%");
 		vol_menu.AddItem("1.0", "100%");
+		vol_menu.ExitBackButton = true;
 		vol_menu.Display(client, 0);
 	}
 }
@@ -321,7 +359,12 @@ public int VolMenuHandler(Menu menu, MenuAction action, int client,int param)
 		CPrintToChat(client, "%T", "Volume 2", client, VolMVP[client]);
 		
 		SetClientCookie(client, mvp_cookie2, vol);
+
+		DisplayVolMenu(client);
 	}
+	else if (action == MenuAction_Cancel && param == MenuCancel_ExitBack) {
+    ShowMainMenu(client);
+  }
 }
 
 public Action Command_MVPVol(int client,int args)
@@ -366,4 +409,14 @@ stock bool IsValidClient(int client)
 stock void FakePrecacheSound(const char[] szPath)
 {
 	AddToStringTable(FindStringTable("soundprecache"), szPath);
+}
+
+stock bool CanUseMVP(int client, int id)
+{
+	if(StrEqual(g_sMVPFlag[id], "") || StrEqual(g_sMVPFlag[id], " "))	return true;
+	else
+	{
+		if (CheckCommandAccess(client, "mvp", ReadFlagString(g_sMVPFlag[id]), true))	return true;
+		else return false;
+	}
 }

@@ -70,6 +70,13 @@
 		"zho"			"正在播放<font color='#B15BFF'>{1}</font> 的MVP音樂 \n <font color='#FF0000'>{2}</font>"
 		"pt"			"Tocando <font color='#B15BFF'>{1}</font> MVP - <font color='#FF0000'>{2}</font>"
 	}
+
+	"No Flag"
+	{
+		"#format"		""
+		"en"			"{GREEN}[MVP] {RED}You don't have access to choose this MVP anthem."
+		"zho"			"{GREEN}[MVP] {RED}你沒有使用這個 MVP 音樂的權限."
+	}
 	
 	"Selected"
 	{

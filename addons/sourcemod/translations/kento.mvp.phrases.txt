@@ -33,7 +33,7 @@
 		"#format"		"{1:.s}"
 		"en"			"Select MVP Anthem Volume\nCurrent Volume:{1}\nUse !mvpvol for fine tuning"
 		"zho"			"選擇MVP音樂音量\n目前音量:{1}\n使用 !mvpvol 微調"
-		"pt"			"Selecione Volume do MVP\nVolume Atual: {1}\nDigite: !mvpvol para ajuste do volume"
+		"pt"			"Selecione Volume do MVP\nVolume Atual: {1}\nDigite: {green}!mvpvol {default}para ajuste do volume"
 	}
 	
 	"Mute"

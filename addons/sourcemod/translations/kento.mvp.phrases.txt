@@ -86,7 +86,7 @@
 	{
 		"en"			"{GREEN}[MVP] {NORMAL}Your MVP Anthem is {PINK}No MVP Anthem{NORMAL}."
 		"zho"			"{GREEN}[MVP] {NORMAL}你的MVP音樂是{PINK}無MVP音樂{NORMAL}."
-		"pt"			"{GREEN}[MVP] {NORMAL}Não selecionou nenhum MVP."
+		"pt"			"{GREEN}[MVP] {NORMAL}Não selecionou {PINK}nenhum MVP{NORMAL}."
 	}
 	
 	"Volume 1"

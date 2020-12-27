@@ -1,12 +1,14 @@
 # CSGO Custom MVP Anthem
+Custom MVP anthem for CSGO, with clientprefs support.
+
 https://forums.alliedmods.net/showthread.php?p=2514835
 
 ## Commands
-- sm_mvp - Abrir o menu de músicas do MVP;
-- sm_mvpvol - Volume do MVP;
+- `sm_mvp` - Abrir o menu de músicas do MVP;
+- `sm_mvpvol` - Volume do MVP;
 
 ## Cvars
-- mvp_defaultvol - Default MVP anthem volume;
+- `mvp_defaultvol` - Default MVP anthem volume;
 
 ## Install
 - Install this [Fix Hint Color Messages](https://github.com/Franc1sco/FixHintColorMessages);

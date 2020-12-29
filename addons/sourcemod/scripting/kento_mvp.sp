@@ -97,16 +97,16 @@ public void OnClientCookiesCached(int client)
 	{
 		int id = FindMVPIDByName(scookie)
 	
-		if(CanUseMVP(client, id) && id > 0)
-		{
-			Selected[client] = id;
-			strcopy(NameMVP[client], sizeof(NameMVP[]), scookie);
-		}
-		else 
-		{
-			Format(NameMVP[client], sizeof(NameMVP[]), "");
-			SetClientCookie(client, mvp_cookie, "");
-		}
+		if(id > 0)
+        {
+            Selected[client] = id;
+            strcopy(NameMVP[client], sizeof(NameMVP[]), scookie);
+        }
+        else 
+        {
+            Format(NameMVP[client], sizeof(NameMVP[]), "");
+            SetClientCookie(client, mvp_cookie, "");
+        } 
 	}
 	else if(StrEqual(scookie,""))	Format(NameMVP[client], sizeof(NameMVP[]), "");
 		
@@ -294,10 +294,12 @@ public int MVPMenuHandler(Menu menu, MenuAction action, int client,int param)
 		GetMenuItem(menu, param, mvp_name, sizeof(mvp_name));
 		
 		if(StrEqual(mvp_name, ""))
-		{
-			CPrintToChat(client, "%T", "No Selected", client);
-			Selected[client] = 0;
-		}
+        {
+            CPrintToChat(client, "%T", "No Selected", client);
+            Selected[client] = 0;
+            NameMVP[client] = "";
+            SetClientCookie(client, mvp_cookie, "");
+        }
 		else
 		{
 			int id = FindMVPIDByName(mvp_name);

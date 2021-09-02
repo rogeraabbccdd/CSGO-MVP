@@ -290,7 +290,7 @@ void DisplayMVPMenu(int client, int start)
 		{
 			if(strlen(g_sMVPSteamId[i]) > 0)
 			{
-				mvp_menu.AddItem(g_sMVPName[i], g_sMVPName[i], StrEqual(steamid, g_sMVPSteamId[i]) ? ITEMDRAW_DEFAULT : ITEMDRAW_DEFAULT);
+				mvp_menu.AddItem(g_sMVPName[i], g_sMVPName[i], StrEqual(steamid, g_sMVPSteamId[i]) ? ITEMDRAW_DEFAULT : ITEMDRAW_DISABLED);
 				continue;
 			}
 			mvp_menu.AddItem(g_sMVPName[i], g_sMVPName[i]);

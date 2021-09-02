@@ -31,6 +31,7 @@ char Configfile[1024],
 	g_sMVPName[MAX_MVP_COUNT + 1][1024], 
 	g_sMVPFile[MAX_MVP_COUNT + 1][1024],
 	g_sMVPFlag[MAX_MVP_COUNT + 1][AdminFlags_TOTAL], 
+	g_sMVPSteamId[MAX_MVP_COUNT + 1][32],
 	NameMVP[MAXPLAYERS + 1][1024];
 
 Handle mvp_cookie, mvp_cookie2;
@@ -101,7 +102,7 @@ public void OnClientCookiesCached(int client)
         {
             Selected[client] = id;
             strcopy(NameMVP[client], sizeof(NameMVP[]), scookie);
-        }
+		}
         else 
         {
             Format(NameMVP[client], sizeof(NameMVP[]), "");
@@ -180,17 +181,22 @@ void LoadConfig()
 		char name[1024];
 		char file[1024];
 		char flag[AdminFlags_TOTAL];
+		char steamid[32];
 		
 		do
 		{
 			kv.GetSectionName(name, sizeof(name));
 			kv.GetString("file", file, sizeof(file));
 			kv.GetString("flag", flag, sizeof(flag), "");
+			kv.GetString("steamid", steamid, sizeof(steamid), "");
+			
+			stock_ExtractSteamID(steamid, steamid, sizeof(steamid));
 			
 			strcopy(g_sMVPName[MVPCount], sizeof(g_sMVPName[]), name);
 			strcopy(g_sMVPFile[MVPCount], sizeof(g_sMVPFile[]), file);
 			strcopy(g_sMVPFlag[MVPCount], sizeof(g_sMVPFlag[]), flag);
-				
+			strcopy(g_sMVPSteamId[MVPCount], sizeof(g_sMVPSteamId[]), steamid);	
+			
 			char filepath[1024];
 			Format(filepath, sizeof(filepath), "sound/%s", g_sMVPFile[MVPCount])
 			AddFileToDownloadsTable(filepath);
@@ -276,8 +282,17 @@ void DisplayMVPMenu(int client, int start)
 		Format(nomvp, sizeof(nomvp), "%T", "No MVP", client);
 		mvp_menu.AddItem("", nomvp);
 		
+		char steamid[32];
+		GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
+		stock_ExtractSteamID(steamid, steamid, sizeof(steamid));
+		
 		for(int i = 1; i < MVPCount; i++)
 		{
+			if(strlen(g_sMVPSteamId[i]) > 0)
+			{
+				mvp_menu.AddItem(g_sMVPName[i], g_sMVPName[i], StrEqual(steamid, g_sMVPSteamId[i]) ? ITEMDRAW_DEFAULT : ITEMDRAW_DEFAULT);
+				continue;
+			}
 			mvp_menu.AddItem(g_sMVPName[i], g_sMVPName[i]);
 		}
 		
@@ -421,4 +436,23 @@ stock bool CanUseMVP(int client, int id)
 		if (CheckCommandAccess(client, "mvp", ReadFlagString(g_sMVPFlag[id]), true))	return true;
 		else return false;
 	}
+}
+
+stock int stock_ExtractSteamID(const char[] sInput, char[] sOutput, const int iSize)
+{
+	static char m_Patterns[][] =
+	{
+		"STEAM_0:0:", "STEAM_0:1:",
+		"STEAM_1:0:", "STEAM_1:1:"
+	};
+
+	static int m_Iterator, m_Length;
+
+	m_Iterator = 0;
+	m_Length = FormatEx(sOutput, iSize, sInput);
+
+	for (; m_Iterator < sizeof(m_Patterns); m_Iterator++)
+		m_Length = ReplaceString(sOutput, iSize, m_Patterns[m_Iterator], "", false);
+
+	return m_Length;
 }

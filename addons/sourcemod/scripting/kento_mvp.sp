@@ -42,6 +42,7 @@ float VolMVP[MAXPLAYERS + 1];
 ConVar Cvar_Vol;
 ConVar Cvar_ShowMode;
 float mvp_defaultVol;
+int mvp_no_acces_show_mode;
 
 public Plugin myinfo =
 {
@@ -67,6 +68,7 @@ public void OnPluginStart()
 	Cvar_Vol = CreateConVar("mvp_defaultvol", "0.8", "Default MVP anthem volume.", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	Cvar_ShowMode = CreateConVar("mvp_no_acces_show_mode", "1", "How to show the mvp(s) to clients that doesn't have acces to them? 1 = Don't show in the menu. 2 = Show but they won't be able to select the item", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	Cvar_Vol.AddChangeHook(OnConVarChanged);
+	Cvar_ShowMode.AddChangeHook(OnConVarChanged);
 
 	for(int i = 1; i <= MaxClients; i++)
 	{ 
@@ -89,6 +91,7 @@ public void OnConfigsExecuted()
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
 {
 	if (convar == Cvar_Vol)	mvp_defaultVol = Cvar_Vol.FloatValue;
+	if (convar == Cvar_ShowMode)mvp_no_acces_show_mode = Cvar_ShowMode.IntValue;
 }
 
 public void OnClientPutInServer(int client)
@@ -328,7 +331,7 @@ void DisplayMVPMenu(int client, int start)
 				}
 				else
 				{
-					switch(Cvar_ShowMode.IntValue)
+					switch(mvp_no_acces_show_mode) // We use switch in case we want future updates on the behavior(more options)
 					{
 						case 1:continue; // Dont add it to the menu at all
 						case 0:mvp_menu.AddItem(g_sMVPName[i], g_sMVPName[i], ITEMDRAW_DISABLED);

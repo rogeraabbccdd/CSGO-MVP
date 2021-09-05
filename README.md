@@ -8,7 +8,8 @@ https://forums.alliedmods.net/showthread.php?p=2514835
 - `sm_mvpvol` - Change MVP anthem volume.
 
 ## Cvars
-- `mvp_defaultvol` - Default MVP anthem volume;
+- `mvp_defaultvol` - Default MVP anthem volume.
+- `mvp_no_acces_show_mode` - How to show the mvp(s) to clients that doesn't have acces to them? 1 = Don't show in the menu. 2 = Show but they won't be able to select the item.
 
 ## Install
 - Install this [Fix Hint Color Messages](https://github.com/Franc1sco/FixHintColorMessages);

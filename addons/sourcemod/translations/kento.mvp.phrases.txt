@@ -7,6 +7,16 @@
 //**********************************************************************************************************************
 "Phrases"
 {
+	"Selected Random"
+	{
+		"en"			"{GREEN}[MVP] {NORMAL}Your MVP Anthem will be a random one {PINK}every round{NORMAL}."
+	}
+
+	"Random MVP"
+	{
+		"en"			"Random MVP Anthem(Every round)"
+	}
+
 	"No MVP"
 	{
 		"en"			"No Custom MVP Anthem"

@@ -4,8 +4,8 @@ Custom MVP anthem for CSGO, with clientprefs support.
 https://forums.alliedmods.net/showthread.php?p=2514835
 
 ## Commands
-- `sm_mvp` - Abrir o menu de músicas do MVP;
-- `sm_mvpvol` - Volume do MVP;
+- `sm_mvp` - Select your MVP anthem.
+- `sm_mvpvol` - Change MVP anthem volume.
 
 ## Cvars
 - `mvp_defaultvol` - Default MVP anthem volume;

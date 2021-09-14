@@ -134,12 +134,20 @@ public Action Event_RoundMVP(Handle event, const char[] name, bool dontBroadcast
 {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	
-	if(StrEqual(NameMVP[client], "") || Selected[client] == 0)	return;
+	if((StrEqual(NameMVP[client], "") || Selected[client] == 0) && Selected[client] != -1)	return; // We  need this in case StrEqual(NameMVP[client], "") is true and the Selected[client] = -1. This would happen if the only selection/cookie of the client is "Random" since he joined the server.
 	
 	int mvp = Selected[client];
 	
 	char sound[1024];
-	Format(sound, sizeof(sound), "*/%s", g_sMVPFile[mvp]);
+	if(mvp != -1)
+	{
+		Format(sound, sizeof(sound), "*/%s", g_sMVPFile[mvp]);
+	}
+	else
+	{
+		mvp = GetRandomMVP(client);
+		Format(sound, sizeof(sound), "*/%s", g_sMVPFile[mvp]);
+	}
 	
 	if (IsValidClient(client) && !IsFakeClient(client))
 	{
@@ -317,6 +325,10 @@ void DisplayMVPMenu(int client, int start)
 		Format(nomvp, sizeof(nomvp), "%T", "No MVP", client);
 		mvp_menu.AddItem("", nomvp);
 		
+		char randommvp[1024];
+		Format(randommvp, sizeof(randommvp), "%T", "Random MVP", client);
+		mvp_menu.AddItem("random", randommvp);
+		
 		char steamid[32];
 		GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
 		stock_ExtractSteamID(steamid, steamid, sizeof(steamid));
@@ -358,10 +370,15 @@ public int MVPMenuHandler(Menu menu, MenuAction action, int client,int param)
 		
 		if(StrEqual(mvp_name, ""))
         {
-            CPrintToChat(client, "%T", "No Selected", client);
-            Selected[client] = 0;
-            NameMVP[client] = "";
-            SetClientCookie(client, mvp_cookie, "");
+			CPrintToChat(client, "%T", "No Selected", client);
+			Selected[client] = 0;
+			NameMVP[client] = "";
+			SetClientCookie(client, mvp_cookie, "");
+		}
+        else if(StrEqual(mvp_name, "random"))
+        {
+            Selected[client] = -1; // We use -1 as a unique id for "random" selection
+            CPrintToChat(client, "%T", "Selected Random", client);
         }
 		else
 		{
@@ -381,7 +398,7 @@ public int MVPMenuHandler(Menu menu, MenuAction action, int client,int param)
 		DisplayMVPMenu(client, menu.Selection);
 	}
 	else if (action == MenuAction_Cancel && param == MenuCancel_ExitBack) {
-    ShowMainMenu(client);
+	ShowMainMenu(client);
   }
 }
 
@@ -503,4 +520,35 @@ stock int stock_ExtractSteamID(const char[] sInput, char[] sOutput, const int iS
 		m_Length = ReplaceString(sOutput, iSize, m_Patterns[m_Iterator], "", false);
 
 	return m_Length;
+}
+
+int GetRandomMVP(int client)
+{
+	ArrayList array = new ArrayList(ByteCountToCells(1024));
+	
+	char steamid[32];
+	GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
+	stock_ExtractSteamID(steamid, steamid, sizeof(steamid));
+	
+	for(int i = 1; i <= MVPCount; i++)
+	{
+		if(CanUseMVP(client, i))
+		{
+			if(g_hMVPSteamIds[i].Length) // If the MVP has any "restrictions"
+			{
+				if(g_hMVPSteamIds[i].FindString(steamid) != -1)
+				{
+					array.PushString(g_sMVPName[i]);
+				}
+				continue;
+			}
+			array.PushString(g_sMVPName[i]);
+		}
+	}
+	
+	char tempMVP[1024];
+	array.GetString(GetRandomInt(0, array.Length - 1), tempMVP, sizeof(tempMVP))
+	
+	delete array;
+	return FindMVPIDByName(tempMVP);
 }

@@ -9,14 +9,14 @@
 {
 	"Selected Random"
 	{
-		"en"			"{GREEN}[MVP] {NORMAL}Your MVP Anthem will be a random one {PINK}every round{NORMAL}."
+		"en"			"{GREEN}[MVP] {NORMAL}Your MVP Anthem will be a {PINK}random {NORMAL}one every round."
+		"pt"			"{GREEN}[MVP] {NORMAL}Seu MVP será {PINK}aleatório {NORMAL}a cada rodada."
 	}
-
 	"Random MVP"
 	{
-		"en"			"Random MVP Anthem(Every round)"
+		"en"			"Random MVP Anthem (Every round)"
+		"pt"			"MVP Aleatório (Cada round)"
 	}
-
 	"No MVP"
 	{
 		"en"			"No Custom MVP Anthem"
@@ -38,8 +38,8 @@
 	"Vol Menu Title 2"
 	{
 		"#format"		"{1:.s}"
-		"en"			"Select MVP Anthem Volume\nCurrent Volume:{1}\nUse !mvpvol for fine tuning"
-		"zho"			"選擇MVP音樂音量\n目前音量:{1}\n使用 !mvpvol 微調"
+		"en"			"Select MVP Anthem Volume\nCurrent Volume: {1}\nUse !mvpvol for fine tuning"
+		"zho"			"選擇MVP音樂音量\n目前音量: {1}\n使用 !mvpvol 微調"
 		"pt"			"Selecione Volume do MVP\nVolume Atual: {1}\nDigite: !mvpvol para ajuste do volume"
 	}	
 	"Mute"
@@ -51,21 +51,21 @@
 	"MVP Menu Title 2"
 	{
 		"#format"		"{1:s}"
-		"en"			"Select Your Custom MVP Anthem\nSelected:{1}"
-		"zho"			"選擇你的MVP音樂\n目前音樂:{1}"
-		"pt"			"Selecione seu MVP\nSelecionado:{1}"
+		"en"			"Select Your Custom MVP Anthem\nSelected: {1}"
+		"zho"			"選擇你的MVP音樂\n目前音樂: {1}"
+		"pt"			"Selecione seu MVP\nSelecionado: {1}"
 	}	
 	"Setting Menu Title"
 	{
 		"#format"		"{1:s},{2:.2f}"
-		"en"			"MVP Anthem Menu\nSelected:{1}\nVolume:{2}"
-		"zho"			"MVP音樂選單\n目前音樂:{1}\n音量:{2}"
-		"pt"			"Menu MVP\nSelecionado:{1}\nVolume:{2}"
+		"en"			"MVP Anthem Menu\nSelected: {1}\nVolume: {2}"
+		"zho"			"MVP音樂選單\n目前音樂: {1}\n音量: {2}"
+		"pt"			"Menu MVP\nSelecionado: {1}\nVolume: {2}"
 	}	
 	"MVP"
 	{
 		"#format"		"{1:N},{2:s}"
-		"en"			"Playing <font color='#B15BFF'>{1}</font>s MVP Anthem - <font color='#FF0000'>{2}</font>"
+		"en"			"Playing <font color='#B15BFF'>{1}</font> MVP Anthem - <font color='#FF0000'>{2}</font>"
 		"zho"			"正在播放<font color='#B15BFF'>{1}</font> 的MVP音樂 - <font color='#FF0000'>{2}</font>"
 		"pt"			"Tocando <font color='#B15BFF'>{1}</font> MVP - <font color='#FF0000'>{2}</font>"
 	}

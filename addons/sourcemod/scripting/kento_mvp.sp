@@ -79,6 +79,7 @@ public void OnPluginStart()
 	{
 		delete g_hMVPSteamIds[i];
 	}
+  SetCommandFlags("playgamesound", GetCommandFlags("playgamesound") ^ FCVAR_CHEAT);
 }
 
 public void OnConfigsExecuted()

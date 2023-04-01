@@ -34,7 +34,31 @@
 		"en"			"Select Your Custom MVP Anthem"
 		"zho"			"選擇你的MVP音樂"
 		"pt"			"Selecione seu MVP"
-	}	
+	}
+	"Preview Menu Title"
+	{
+		"#format"		"{1:s}"
+		"en"			"MVP - {1}"
+		"zho"			"MVP - {1}"
+	}
+	"Start Preview"
+	{
+		"#format"		""
+		"en"			"Preview "
+		"zho"			"試聽"	
+	}
+	"Stop Preview"
+	{
+		"#format"		""
+		"en"			"Stop Preview "
+		"zho"			"停止試聽"	
+	}
+	"Select MVP"
+	{
+		"#format"		""
+		"en"			"Select"
+		"zho"			"停止試聽"	
+	}
 	"Vol Menu Title 2"
 	{
 		"#format"		"{1:.s}"

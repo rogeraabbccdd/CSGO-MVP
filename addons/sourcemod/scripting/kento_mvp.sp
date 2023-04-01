@@ -25,7 +25,7 @@
 
 #pragma newdecls required
 
-int MVPCount, Selected[MAXPLAYERS + 1];
+int MVPCount, Selected[MAXPLAYERS + 1], PreviewMVP[MAXPLAYERS + 1];
 
 char Configfile[1024], 
   g_sMVPName[MAX_MVP_COUNT + 1][1024], 
@@ -104,23 +104,25 @@ public void OnClientPutInServer(int client)
 public void OnClientCookiesCached(int client)
 {
   if(!IsValidClient(client) && IsFakeClient(client))	return;
+
+  PreviewMVP[client] = 0;
   
   char scookie[1024];
   GetClientCookie(client, mvp_cookie, scookie, sizeof(scookie));
   if(!StrEqual(scookie, ""))
   {
-    int id = FindMVPIDByName(scookie)
+    int id = FindMVPIDByName(scookie);
   
     if(id > 0)
-        {
+    {
       Selected[client] = id;
       strcopy(NameMVP[client], sizeof(NameMVP[]), scookie);
     }
     else
     {
-            Format(NameMVP[client], sizeof(NameMVP[]), "");
-            SetClientCookie(client, mvp_cookie, "");
-        } 
+      Format(NameMVP[client], sizeof(NameMVP[]), "");
+      SetClientCookie(client, mvp_cookie, "");
+    } 
   }
   else if(StrEqual(scookie,""))	Format(NameMVP[client], sizeof(NameMVP[]), "");
     
@@ -136,7 +138,8 @@ public Action Event_RoundMVP(Handle event, const char[] name, bool dontBroadcast
 {
   int client = GetClientOfUserId(GetEventInt(event, "userid"));
   
-  if((StrEqual(NameMVP[client], "") || Selected[client] == 0) && Selected[client] != -1)	return; // We  need this in case StrEqual(NameMVP[client], "") is true and the Selected[client] = -1. This would happen if the only selection/cookie of the client is "Random" since he joined the server.
+  // We need this in case StrEqual(NameMVP[client], "") is true and the Selected[client] = -1. This would happen if the only selection/cookie of the client is "Random" since he joined the server.
+  if((StrEqual(NameMVP[client], "") || Selected[client] == 0) && Selected[client] != -1)	return Plugin_Continue;
   
   int mvp = Selected[client];
   
@@ -169,6 +172,7 @@ public Action Event_RoundMVP(Handle event, const char[] name, bool dontBroadcast
       }	
     }
   }
+  return Plugin_Continue;
 }	
 
 int FindMVPIDByName(char [] name)
@@ -307,6 +311,8 @@ public int SettingsMenuHandler(Menu menu, MenuAction action, int client, int par
       DisplayVolMenu(client);
     }
   }
+
+  return 0;
 }
 
 void DisplayMVPMenu(int client, int start)
@@ -371,7 +377,7 @@ public int MVPMenuHandler(Menu menu, MenuAction action, int client,int param)
     GetMenuItem(menu, param, mvp_name, sizeof(mvp_name));
     
     if(StrEqual(mvp_name, ""))
-        {
+    {
       CPrintToChat(client, "%T", "No Selected", client);
       Selected[client] = 0;
       NameMVP[client] = "";
@@ -388,10 +394,8 @@ public int MVPMenuHandler(Menu menu, MenuAction action, int client,int param)
 
       if(CanUseMVP(client, id))
       {
-        CPrintToChat(client, "%T", "Selected", client, mvp_name);
-        Selected[client] = id;
-        strcopy(NameMVP[client], sizeof(NameMVP[]), mvp_name);
-        SetClientCookie(client, mvp_cookie, mvp_name);
+        DisplayPreviewMenu(client, id);
+        return 0;
       }
       else {
         CPrintToChat(client, "%T", "No Flag", client, mvp_name);
@@ -400,8 +404,87 @@ public int MVPMenuHandler(Menu menu, MenuAction action, int client,int param)
     DisplayMVPMenu(client, menu.Selection);
   }
   else if (action == MenuAction_Cancel && param == MenuCancel_ExitBack) {
-  ShowMainMenu(client);
+    ShowMainMenu(client);
   }
+
+  return 0;
+}
+
+void DisplayPreviewMenu (int client, int id)
+{
+  if (!IsValidClient(client) || IsFakeClient(client)) return;
+
+  Menu preview_menu = new Menu(PreviewMenuHandler);
+
+  char temp[1024], temp2[1024];
+  Format(temp, sizeof(temp), "%T", "Preview Menu Title", client, g_sMVPName[id]);
+  preview_menu.SetTitle(temp);
+
+  Format(temp, sizeof(temp), "%T", "Select MVP", client);
+  Format(temp2, sizeof(temp2), "select%d", id);
+  preview_menu.AddItem(temp2, temp);
+
+  if (PreviewMVP[client] == 0 || PreviewMVP[client] != id) {
+    PreviewMVP[client] = 0;
+    Format(temp, sizeof(temp), "%T", "Start Preview", client);
+    Format(temp2, sizeof(temp2), "preview%d", id);
+    preview_menu.AddItem(temp2, temp);
+  }
+  else
+  {
+    Format(temp, sizeof(temp), "%T", "Stop Preview", client);
+    preview_menu.AddItem("stop", temp);
+  }
+
+  preview_menu.ExitBackButton = true;
+  preview_menu.Display(client, 0);
+}
+
+public int PreviewMenuHandler(Menu menu, MenuAction action, int client,int param)
+{
+  if(action == MenuAction_Select)
+  {
+    char selected[1024];
+    GetMenuItem(menu, param, selected, sizeof(selected));
+
+    if(StrEqual(selected, "stop"))
+    {
+      char sound[1024];
+      Format(sound, sizeof(sound), "*/%s", g_sMVPFile[PreviewMVP[client]]);
+      StopSound(client, SNDCHAN_STATIC, sound);
+      int old = PreviewMVP[client];
+      PreviewMVP[client] = 0;
+      DisplayPreviewMenu(client, old);
+    }
+    else if (ReplaceStringEx(selected, sizeof(selected), "select", "") != -1)
+    {
+      int id = StringToInt(selected);
+      CPrintToChat(client, "%T", "Selected", client, g_sMVPName[id]);
+      Selected[client] = id;
+      strcopy(NameMVP[client], sizeof(NameMVP[]), g_sMVPName[id]);
+      SetClientCookie(client, mvp_cookie, g_sMVPName[id]);
+      DisplayMVPMenu(client, 0);
+    }
+    else if (ReplaceStringEx(selected, sizeof(selected), "preview", "") != -1) {
+      int id = StringToInt(selected);
+      if (PreviewMVP[client] != 0)
+      {
+        char sound[1024];
+        Format(sound, sizeof(sound), "*/%s", g_sMVPFile[PreviewMVP[client]]);
+        StopSound(client, SNDCHAN_STATIC, sound);
+      }
+      PreviewMVP[client] = id;
+      char sound[1024];
+      Format(sound, sizeof(sound), "*/%s", g_sMVPFile[id]);
+      EmitSoundToClient(client, sound, SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NONE, _, VolMVP[client]);
+      DisplayPreviewMenu(client, id);
+    }
+  }
+  else if (action == MenuAction_Cancel && param == MenuCancel_ExitBack) {
+    DisplayMVPMenu(client, 0);
+  }
+
+  return 0;
 }
 
 void DisplayVolMenu(int client)
@@ -449,6 +532,8 @@ public int VolMenuHandler(Menu menu, MenuAction action, int client,int param)
   else if (action == MenuAction_Cancel && param == MenuCancel_ExitBack) {
     ShowMainMenu(client);
   }
+
+  return 0;
 }
 
 public Action Command_MVPVol(int client,int args)

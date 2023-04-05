@@ -48,7 +48,7 @@ public Plugin myinfo =
 {
   name = "[CS:GO] Custom MVP Anthem",
   author = "Kento",
-  version = "1.11",
+  version = "1.12",
   description = "Custom MVP Anthem",
   url = "https://github.com/rogeraabbccdd/csgo_mvp"
 };
